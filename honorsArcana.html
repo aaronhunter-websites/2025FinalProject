@@ -1,0 +1,1941 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Honors Arcana</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#121a22;
+      --text:#e8edf2;
+      --muted:#a9b6c4;
+      --border:#223042;
+      --accent:#ffd24a;
+      --danger:#ff4a4a;
+      --ok:#62ffa5;
+      --blue:#66a6ff;
+      --shadow: rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1100px 700px at 50% 10%, #182234 0%, var(--bg) 55%, #070a0e 100%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      line-height:1.35;
+    }
+    header{
+      padding:18px 14px 8px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    h1{margin:0 0 6px; font-size:20px; letter-spacing:.4px}
+    .sub{color:var(--muted); font-size:13px; margin:0}
+    main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px 14px 22px;
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ main{grid-template-columns:1fr} }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow: 0 14px 36px var(--shadow);
+      overflow:hidden;
+    }
+    .phead{
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(90deg, rgba(255,210,74,.14), rgba(102,166,255,.10), rgba(98,255,165,.08));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .badge{
+      font-size:11px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.25);
+      padding:2px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .pbody{ padding:12px 14px; }
+
+    details{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      border-radius:12px;
+      padding:10px 12px;
+      margin-bottom:10px;
+    }
+    details summary{
+      cursor:pointer;
+      user-select:none;
+      color:var(--text);
+      font-weight:600;
+      margin:-2px 0 6px;
+      outline:none;
+    }
+    .muted{color:var(--muted)}
+    .kbd{
+      display:inline-block;
+      padding:2px 6px;
+      border:1px solid rgba(255,255,255,.18);
+      border-bottom-color: rgba(255,255,255,.08);
+      border-radius:8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      background:rgba(255,255,255,.06);
+      margin:0 2px;
+      white-space:nowrap;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{
+      cursor:pointer;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.22));
+      color:var(--text);
+      padding:10px 12px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      transition: transform .05s ease, border-color .15s ease;
+      font:inherit;
+    }
+    button:hover{border-color:rgba(255,255,255,.32)}
+    button:active{transform: translateY(1px)}
+    button.primary{
+      border-color: rgba(255,210,74,.55);
+      box-shadow: 0 10px 22px rgba(255,210,74,.12), 0 12px 30px rgba(0,0,0,.35);
+    }
+    .small{padding:8px 10px; font-size:12.5px; color:var(--muted)}
+    select{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      font:inherit;
+    }
+    .statgrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .stat{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:12px;
+      padding:10px 12px;
+    }
+    .k{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted)}
+    .v{font-size:18px; margin-top:4px}
+    .accent{color:var(--accent)}
+    .ok{color:var(--ok)}
+
+    .gameWrap{display:flex; flex-direction:column; gap:10px; padding:12px 12px 14px;}
+    .canvasBox{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      overflow:hidden;
+      background:#000;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.6);
+      position:relative;
+    }
+    canvas{display:block; width:100%; height:auto; background:#000}
+
+    .hudbar{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center; justify-content:space-between;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+    }
+    .hudleft,.hudright{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+    .pill{
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(0,0,0,.25);
+    }
+    .hearts{display:flex; gap:4px; align-items:center}
+    .heart{width:14px; height:12px; position:relative; transform: translateY(1px);}
+    .heart:before,.heart:after{
+      content:""; position:absolute; width:8px;height:8px; background:var(--danger);
+      border-radius:50%; top:0;
+    }
+    .heart:before{left:0}
+    .heart:after{right:0}
+    .heart i{
+      position:absolute; left:3px; top:3px; width:8px; height:8px;
+      background:var(--danger); transform: rotate(45deg);
+    }
+    .heart.empty:before,.heart.empty:after,.heart.empty i{background: rgba(255,255,255,.12)}
+    .bar{
+      width:140px; height:9px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .bar > div{ height:100%; width:0%; background: linear-gradient(90deg, var(--accent), #ff7b4a); }
+    .bar.blue > div{ background: linear-gradient(90deg, var(--blue), #8dd2ff); }
+    .bar.ok > div{ background: linear-gradient(90deg, var(--ok), #a8ffcf); }
+
+    .modal{
+      position:absolute; inset:0;
+      display:none; align-items:center; justify-content:center;
+      padding:16px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(2px);
+    }
+    .modalCard{
+      width:min(720px, 100%);
+      background: rgba(8,10,12,.92);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:18px;
+      padding:14px 16px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+    .modalCard h2{
+      margin:0 0 6px;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+    }
+    .choiceGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width: 700px){ .choiceGrid{grid-template-columns:1fr} }
+    .choice{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:10px 12px;
+      cursor:pointer;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+    }
+    .choice:hover{border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.06)}
+    .choice:active{transform: translateY(1px)}
+    .choice .t{font-weight:700}
+    .choice .d{color:var(--muted); font-size:12.5px; margin-top:2px}
+    .footerNote{margin-top:10px; color:var(--muted); font-size:12.5px;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Honors Arcana <span class="badge">by Aaron Hunter</span></h1>
+  <p class="sub">Clear enemies → doors open → step on a green door to advance → choose an upgrade.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="phead">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-weight:700; letter-spacing:.3px;">How it works</div>
+        <div class="muted" style="font-size:12.5px">Controls, classes, and settings</div>
+      </div>
+      <span class="badge" id="uiStatus">Ready</span>
+    </div>
+    <div class="pbody">
+      <details open>
+        <summary>Controls</summary>
+        <div class="muted" style="font-size:13px">
+          Move: <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span>
+          • Aim: <span class="kbd">Mouse</span> (over canvas)
+          • Basic: <span class="kbd">Left Click</span> / <span class="kbd">Space</span><br/>
+          Ability: <span class="kbd">E</span> • Pause: <span class="kbd">Esc</span> • Restart: <span class="kbd">N</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>Objective & Classes</summary>
+        <div class="muted" style="font-size:13px">
+          Clear enemies to open doors. Step on an open green door to advance.
+          Score = <strong>kills only</strong>. (No points for waiting.)
+          <br><br>
+          Frost: freeze crowds and hit harder against frozen targets. <br>
+          Blood: trade your HP for power and drain the life from your enemies. <br>
+          Fire: use short cone attacks to recharge devastating fireballs.
+        </div>
+      </details>
+
+      <div class="row" style="margin-top:8px;">
+        <label class="muted" style="font-size:12.5px">Class</label>
+        <select id="classSel">
+            <option value="frost">Frost Mage</option>
+            <option value="blood">Blood Mage</option>
+            <option value="fire">Fire Mage</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <label class="muted" style="font-size:12.5px">Difficulty</label>
+        <select id="diffSel">
+          <option value="1">Easy</option>
+          <option value="2" selected>Normal</option>
+          <option value="3">Hard</option>
+          <option value="4">Nightmare</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="primary" id="btnStart">Start</button>
+        <button id="btnRestart">Restart (N)</button>
+        <button class="small" id="btnPause">Pause (Esc)</button>
+      </div>
+
+      <div class="statgrid">
+        <div class="stat">
+            <div class="k">BEST (<span id="uiBestClass">—</span>)</div>
+            <div class="v"><span id="uiBest">0</span> <span class="muted" style="font-size:12px">pts</span></div>
+        </div>
+        <div class="stat"><div class="k">Run</div><div class="v"><span id="uiScore">0</span> <span class="muted" style="font-size:12px">pts</span></div></div>
+        <div class="stat"><div class="k">Room</div><div class="v"><span id="uiRoom">1</span></div></div>
+        <div class="stat"><div class="k">Kills</div><div class="v"><span id="uiKills">0</span></div></div>
+      </div>
+
+      <div class="footerNote" id="uiTip">Tip: Cone attacks do NOT go through walls (line-of-sight check).</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="phead">
+      <div style="font-weight:700; letter-spacing:.3px;">Game</div>
+      <span class="badge">Canvas • no libraries</span>
+    </div>
+
+    <div class="gameWrap">
+      <div class="hudbar">
+        <div class="hudleft">
+          <span class="pill">HP</span>
+          <div class="hearts" id="uiHearts"></div>
+          <span class="pill">Class: <span class="accent" id="uiClass">—</span></span>
+          <span class="pill">i-frames: <span id="uiInv" class="muted">—</span></span>
+        </div>
+        <div class="hudright">
+          <span class="pill" id="uiBloodPill" style="display:none;">Blood Power: <span id="uiBloodPower" class="accent">—</span></span>
+          <span class="pill">Basic</span>
+          <div class="bar blue"><div id="barBasic"></div></div>
+          <span class="pill">Ability (E)</span>
+          <div class="bar ok"><div id="barAbility"></div></div>
+        </div>
+      </div>
+
+      <div class="canvasBox">
+        <canvas id="c" width="960" height="540"></canvas>
+
+        <div class="modal" id="modal">
+          <div class="modalCard">
+            <h2 id="modalTitle">Title</h2>
+            <div class="muted" id="modalText">Text</div>
+            <div class="choiceGrid" id="choices"></div>
+            <div class="footerNote" id="modalHint"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="muted" style="font-size:12.5px">If your window is small, the page will scroll. That’s intentional for clarity.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // =========================
+  // 
+  // Single-file, tuned for feel
+  // =========================
+
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d', { alpha:false });
+
+  const uiStatus = document.getElementById('uiStatus');
+  const uiBest = document.getElementById('uiBest');
+  const uiBestClass = document.getElementById("uiBestClass");
+  const uiScore = document.getElementById('uiScore');
+  const uiRoom  = document.getElementById('uiRoom');
+  const uiKills = document.getElementById('uiKills');
+  const uiHearts= document.getElementById('uiHearts');
+  const uiClass = document.getElementById('uiClass');
+  const uiTip = document.getElementById('uiTip');
+  const uiInv = document.getElementById('uiInv');
+  const barBasic = document.getElementById('barBasic');
+  const barAbility = document.getElementById('barAbility');
+
+  const uiBloodPill = document.getElementById('uiBloodPill');
+  const uiBloodPower = document.getElementById('uiBloodPower');
+
+  const btnStart = document.getElementById('btnStart');
+  const btnRestart = document.getElementById('btnRestart');
+  const btnPause = document.getElementById('btnPause');
+  const classSel = document.getElementById('classSel');
+  const diffSel = document.getElementById('diffSel');
+
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalText = document.getElementById('modalText');
+  const modalHint = document.getElementById('modalHint');
+  const choicesBox = document.getElementById('choices');
+
+  const TAU = Math.PI*2;
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const irand = (a,b)=> (a + (Math.random()*(b-a+1)|0));
+  const dist2 = (ax,ay,bx,by)=>{const dx=ax-bx,dy=ay-by; return dx*dx+dy*dy;}
+  const norm = (x,y)=>{const l=Math.hypot(x,y)||1; return [x/l,y/l];}
+  const angNorm = (a)=>((a%TAU)+TAU)%TAU;
+  const angDiff = (a,b)=>{ let d = angNorm(a)-angNorm(b); if(d>Math.PI) d-=TAU; if(d<-Math.PI) d+=TAU; return d; };
+
+  // Persistence (best score per class)
+  const BEST_BY_CLASS_KEY = "honorsarcana_bestByClass_v1";
+
+    function loadBestByClass(){
+        try{
+            const raw = localStorage.getItem(BEST_BY_CLASS_KEY);
+            const obj = raw ? JSON.parse(raw) : {};
+        return {
+            frost: Number(obj.frost || 0),
+            fire:  Number(obj.fire  || 0),
+            blood: Number(obj.blood || 0),
+               };
+         }catch{
+            return { frost:0, fire:0, blood:0 };
+        }
+    }
+
+function saveBestByClass(b){
+  localStorage.setItem(BEST_BY_CLASS_KEY, JSON.stringify(b));
+}
+
+// keep it in memory so you don't parse JSON every frame
+let bestByClass = loadBestByClass();
+uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
+
+
+  // Difficulty tuning: scale via spawn + hp + speed (NOT just damage)
+  const DIFF = {
+    1: { name:"Easy",      enemyHp:0.92, enemyDmg:0.75, enemySpd:0.92, spawn:0.85 },
+    2: { name:"Normal",    enemyHp:1.00, enemyDmg:0.88, enemySpd:0.98, spawn:1.00 },
+    3: { name:"Hard",      enemyHp:1.12, enemyDmg:1.02, enemySpd:1.05, spawn:1.15 },
+    4: { name:"Nightmare", enemyHp:1.28, enemyDmg:1.15, enemySpd:1.12, spawn:1.30 },
+  };
+
+  // World sizing (world units)
+  const TILE = 24;
+  const GRID_W = 30;
+  const GRID_H = 18;
+  const ROOM_W = GRID_W * TILE; // 720
+  const ROOM_H = GRID_H * TILE; // 432
+
+  // View transform (world -> canvas)
+  const view = { s:1, ox:0, oy:0 };
+  function updateView(){
+    view.s = Math.min(canvas.width/ROOM_W, canvas.height/ROOM_H);
+    view.ox = (canvas.width - ROOM_W*view.s)/2;
+    view.oy = (canvas.height - ROOM_H*view.s)/2;
+  }
+  updateView();
+  window.addEventListener('resize', updateView);
+  function c2w(x,y){ return { x: (x - view.ox)/view.s, y: (y - view.oy)/view.s }; }
+
+  // Input
+  const keys = new Set();
+  let mouse = { wx: ROOM_W/2, wy: ROOM_H/2, inside:false };
+
+  window.addEventListener('keydown', (e)=>{
+    const k = e.key.toLowerCase();
+    if (k === ' ') e.preventDefault();
+    keys.add(k);
+
+    if(e.key === 'Escape') togglePause();
+    if(k==='n') restart();
+    if(k==='e') useAbility();
+    if(k==='enter') start();
+  });
+  window.addEventListener('keyup', (e)=> keys.delete(e.key.toLowerCase()));
+
+  canvas.addEventListener('mousemove', (e)=>{
+    const r = canvas.getBoundingClientRect();
+    const cx = (e.clientX - r.left) * (canvas.width / r.width);
+    const cy = (e.clientY - r.top) * (canvas.height / r.height);
+    const w = c2w(cx,cy);
+    mouse.wx = w.x; mouse.wy = w.y;
+    mouse.inside = true;
+  });
+  canvas.addEventListener('mouseleave', ()=> mouse.inside=false);
+
+  canvas.addEventListener('mousedown', (e)=>{
+    if(e.button!==0) return;
+    if(state!=='play') return;
+    basicAttack();
+  });
+
+  // Grid
+  let grid = [];
+  function gGet(tx,ty){
+    if(tx<0||ty<0||tx>=GRID_W||ty>=GRID_H) return 1;
+    return grid[ty][tx];
+  }
+  function gSet(tx,ty,v){
+    if(tx<0||ty<0||tx>=GRID_W||ty>=GRID_H) return;
+    grid[ty][tx]=v;
+  }
+  function isSolidTile(v){ return v===1 || v===2; } // 1 wall, 2 locked door, 3 open door
+
+  const doorCells = [
+    {x:(GRID_W/2|0), y:0},
+    {x:(GRID_W/2|0), y:GRID_H-1},
+    {x:0, y:(GRID_H/2|0)},
+    {x:GRID_W-1, y:(GRID_H/2|0)},
+  ];
+
+  function doorsOpen(open){
+    const val = open ? 3 : 2;
+    for(const d of doorCells) gSet(d.x,d.y,val);
+  }
+  function doorsAreOpen(){ return gGet((GRID_W/2|0),0)===3; }
+
+  // --- Connectivity helpers to reduce "stuck behind U" ---
+  function floodCountFrom(tx0,ty0){
+    const q=[[tx0,ty0]];
+    const seen=new Set([tx0+","+ty0]);
+    let count=0;
+    while(q.length){
+      const [tx,ty]=q.pop();
+      count++;
+      const n=[[tx+1,ty],[tx-1,ty],[tx,ty+1],[tx,ty-1]];
+      for(const [nx,ny] of n){
+        if(nx<0||ny<0||nx>=GRID_W||ny>=GRID_H) continue;
+        const v=gGet(nx,ny);
+        if(v!==0 && v!==3) continue;
+        const k=nx+","+ny;
+        if(seen.has(k)) continue;
+        seen.add(k); q.push([nx,ny]);
+      }
+    }
+    return count;
+  }
+
+  function buildRoom(roomIndex){
+    // regenerate until connectivity is decent
+    for(let attempt=0; attempt<10; attempt++){
+      grid = Array.from({length:GRID_H}, ()=>Array.from({length:GRID_W}, ()=>0));
+      // borders
+      for(let x=0;x<GRID_W;x++){ gSet(x,0,1); gSet(x,GRID_H-1,1); }
+      for(let y=0;y<GRID_H;y++){ gSet(0,y,1); gSet(GRID_W-1,y,1); }
+
+      // doors
+      for(const d of doorCells) gSet(d.x,d.y,2);
+      gSet((GRID_W/2|0), 1, 0);
+      gSet((GRID_W/2|0), GRID_H-2, 0);
+      gSet(1, (GRID_H/2|0), 0);
+      gSet(GRID_W-2, (GRID_H/2|0), 0);
+
+      // obstacle style: fewer rectangles, more "bars" + pillars = fewer U pockets
+      const bars = 6 + Math.min(6, roomIndex);
+      for(let i=0;i<bars;i++){
+        const horiz = Math.random()<0.55;
+        const len = irand(2,4);
+        const tx = irand(2, GRID_W-3-len);
+        const ty = irand(2, GRID_H-3-len);
+        if(dist2(tx,ty, GRID_W/2, GRID_H/2) < 25) continue;
+
+        for(let j=0;j<len;j++){
+          const x = horiz ? tx+j : tx;
+          const y = horiz ? ty : ty+j;
+          if(x<=1||y<=1||x>=GRID_W-2||y>=GRID_H-2) continue;
+          gSet(x,y,1);
+        }
+      }
+
+      // pillars
+      const pillars = 10 + roomIndex*2;
+      for(let i=0;i<pillars;i++){
+        const x = irand(2, GRID_W-3);
+        const y = irand(2, GRID_H-3);
+        if(dist2(x,y, GRID_W/2, GRID_H/2) < 20) continue;
+        if(gGet(x,y)===0) gSet(x,y,1);
+      }
+
+      // clear center cross
+      const cx = (GRID_W/2|0), cy=(GRID_H/2|0);
+      for(let x=cx-3; x<=cx+3; x++) gSet(x,cy,0);
+      for(let y=cy-3; y<=cy+3; y++) gSet(cx,y,0);
+
+      const reachable = floodCountFrom(cx,cy);
+      const totalEmpty = grid.flat().filter(v=>v===0).length + grid.flat().filter(v=>v===3).length;
+      const ratio = reachable / Math.max(1,totalEmpty);
+
+      if(ratio > 0.80) break;
+    }
+  }
+
+  // Entities
+  let player = null;
+  let enemies = [];
+  let projs = [];
+  let fx = [];
+  let enemyIdSeq = 1;
+
+  // State
+  let state = 'menu'; // menu | play | reward | paused | dead
+  let room = 1;
+  let score = 0;
+  let kills = 0;
+
+  // ===== Classes =====
+  const CLASSES = {
+    frost: {
+      name:"Frost Mage",
+      baseMaxHearts: 9,
+      moveSpd: 166,
+      basicCd: 0.28,
+      abilityCd: 4.4,
+      boltDmg: 5,
+      boltBonusVsFrozen: 11,
+
+      freezeDuration: 1.65,
+      freezeConeRange: 96,
+      freezeConeWidthDeg: 130,
+      freezeConeDmg: 6,
+      freezeBonusPerExtraHit: 0.20, // +0.20s for each enemy after the first
+      freezeBonusCap: 2.00 ,         // max bonus seconds added
+
+    },
+    blood: {
+      name:"Blood Mage",
+      baseMaxHearts: 10,
+      moveSpd: 162,
+      basicCd: 0.30,
+      abilityCd: 3.75,
+      boltDmgBase: 10,
+      drainRange: 73,
+      drainWidthDeg: 60,
+      drainDmg: 6,
+      
+    },
+    fire: {
+      name:"Fire Mage",
+      baseMaxHearts: 9,
+      moveSpd: 168,
+      basicCd: 0.30,
+      abilityCd: 7.0,
+        // Basic attack cone stuff
+      coneRange: 60,
+      coneWidthDeg: 65,
+      coneDmg: 8,
+      basicKnock: 11,
+      basicStun: 0.06,
+        // NEW: basic attack reduces fireball cooldown
+      cdRefundPerHit: 0.38,   // seconds shaved by 1 hit
+      cdRefundCap: 1.65,      // max seconds shaved per basic
+      cdRefundExpo: 0.75,     // additional hits. 0.5=sqrt --> 1=linear
+
+        // Fireball ability stuff 
+      fireballSpeed: 280,
+      fireballRadius: 14,
+      fireballPierce: 1,
+      fireballDmg: 28,
+      fireballSplash: 55
+    }
+  };
+
+  // ---- Blood Power (DISCRETE TIERS) ----
+  function bloodPowerTier(){
+    const max = Math.max(1, player.maxHp);
+    const pct = (player.hp / max) * 100;
+    if(pct > 75) return 1;
+    if(pct > 50) return 2;
+    if(pct > 25) return 3;
+    return 4;
+  }
+  function bloodPowerMult(tier){
+    return tier===1 ? 0.50 : tier===2 ? 1.00 : tier===3 ? 1.4 : 1.80;
+  }
+  function bloodProjRadius(tier){
+    return tier===1 ? 4.0 : tier===2 ? 5.0 : tier===3 ? 6.5 : 8.0;
+  }
+
+  let upgrades = null;
+
+  function classStats(){
+    const base = CLASSES[player.cls];
+    return {
+      maxHp: (base.baseMaxHearts + upgrades.maxHeartsBonus)*2,
+      moveSpd: base.moveSpd * upgrades.moveMult,
+      basicCd: base.basicCd * upgrades.basicCdMult,
+      abilityCd: base.abilityCd * upgrades.abilityCdMult,
+      dmgMult: upgrades.dmgMult
+    };
+  }
+
+  // Collision
+  function circleHitsSolid(nx,ny,r){
+    const minTx = Math.floor((nx - r)/TILE);
+    const maxTx = Math.floor((nx + r)/TILE);
+    const minTy = Math.floor((ny - r)/TILE);
+    const maxTy = Math.floor((ny + r)/TILE);
+    for(let ty=minTy; ty<=maxTy; ty++){
+      for(let tx=minTx; tx<=maxTx; tx++){
+        if(isSolidTile(gGet(tx,ty))){
+          const x0 = tx*TILE, y0 = ty*TILE;
+          const x1 = x0+TILE, y1=y0+TILE;
+          const cx = clamp(nx, x0, x1);
+          const cy = clamp(ny, y0, y1);
+          if(dist2(nx,ny,cx,cy) < r*r) return true;
+        }
+      }
+    }
+    return false;
+  }
+  function moveCircle(ent, dx, dy){
+    if(dx!==0){
+      const nx = ent.x + dx;
+      if(!circleHitsSolid(nx, ent.y, ent.r)) ent.x = nx;
+    }
+    if(dy!==0){
+      const ny = ent.y + dy;
+      if(!circleHitsSolid(ent.x, ny, ent.r)) ent.y = ny;
+    }
+  }
+
+  // Raycast LOS (tile grid)
+  function hasLOS(ax,ay,bx,by){
+    const dx = bx-ax, dy=by-ay;
+    const dist = Math.hypot(dx,dy);
+    if(dist<1e-6) return true;
+    const steps = Math.ceil(dist / 8);
+    const sx = dx/steps, sy=dy/steps;
+    let x=ax, y=ay;
+    for(let i=0;i<=steps;i++){
+      const tx = Math.floor(x/TILE);
+      const ty = Math.floor(y/TILE);
+      const v = gGet(tx,ty);
+      if(v===1 || v===2) return false;
+      x += sx; y += sy;
+    }
+    return true;
+  }
+
+  // Spawning helpers
+  function randomFreeSpotAwayFromPlayer(minDist=200){
+    for(let t=0;t<4000;t++){
+      const tx = irand(2, GRID_W-3);
+      const ty = irand(2, GRID_H-3);
+      if(gGet(tx,ty)!==0) continue;
+      const x = tx*TILE + TILE/2;
+      const y = ty*TILE + TILE/2;
+      if(dist2(x,y, player.x, player.y) < minDist*minDist) continue;
+      return {x,y};
+    }
+    return {x: TILE*3, y:TILE*3};
+  }
+
+  function randomFreeSpotNear(x0,y0, minR=22, maxR=44){
+    for(let t=0;t<60;t++){
+      const a = Math.random()*TAU;
+      const r = minR + Math.random()*(maxR-minR);
+      const x = x0 + Math.cos(a)*r;
+      const y = y0 + Math.sin(a)*r;
+      if(x<16||y<16||x>ROOM_W-16||y>ROOM_H-16) continue;
+      if(circleHitsSolid(x,y,10)) continue;
+      // avoid spawning on top of others
+      let ok = true;
+      for(const e of enemies){
+        if(!e.alive) continue;
+        if(dist2(x,y,e.x,e.y) < (e.r+12)*(e.r+12)) { ok=false; break; }
+      }
+      if(ok && dist2(x,y,player.x,player.y) > 70*70) return {x,y};
+    }
+    return null;
+  }
+
+  // Spawn distribution: shifts with room; targets ~ (room 12): 50% chaser, 30% skitter, 20% shooter (shooter caps at 20% later)
+  function mobWeights(roomIndex, diffNum){
+    // difficulty makes the curve ramp faster (harder => earlier mix change)
+    const ramp = 1 + Math.max(-0.10, Math.min(0.25, (diffNum-2)*0.12)); // easy slightly slower, nightmare faster
+    const rr = roomIndex * ramp;
+
+    const start = { chaser:0.80, skitter:0.18, shooter:0.02 };
+    const target = { chaser:0.55, skitter:0.25, shooter:0.20 };
+
+    const t = clamp((rr-1) / (12-1), 0, 1);
+    let wC = start.chaser + (target.chaser-start.chaser)*t;
+    let wK = start.skitter + (target.skitter-start.skitter)*t;
+    let wS = start.shooter + (target.shooter-start.shooter)*t;
+
+    // After 12, hold at target, but allow difficulty to bias slightly toward skitter/shooter (while capping shooter at 0.20)
+    const diffBias = (diffNum-2); // -1..+2
+    if(diffBias !== 0){
+      // nudge from chaser into skitter/shooter on higher difficulties
+      const give = clamp(diffBias*0.03, -0.02, 0.06); // easy slightly more chaser; nightmare slightly less
+      wC = clamp(wC - give, 0.20, 0.90);
+      // split give: 2/3 to skitter, 1/3 to shooter
+      wK = wK + give*(2/3);
+      wS = wS + give*(1/3);
+    }
+
+    // shooter cap at 0.20 always
+    if(wS > 0.20){
+      const extra = wS - 0.20;
+      wS = 0.20;
+      // return extra to chaser first (keeps skitter stable-ish)
+      wC += extra;
+    }
+
+    // normalize
+    const sum = wC+wK+wS;
+    wC/=sum; wK/=sum; wS/=sum;
+    return { chaser:wC, skitter:wK, shooter:wS };
+  }
+
+  function pickMobTypeFromWeights(w){
+    const r = Math.random();
+    if(r < w.chaser) return "chaser";
+    if(r < w.chaser + w.skitter) return "skitter";
+    return "shooter";
+  }
+
+  function makeEnemy(type, x, y, d, roomIndex, extra={}){
+    const baseHp =
+      (type==="chaser"? 26 :
+       type==="shooter"? 20 :
+       type==="skitter"? 14 :
+       type==="summoner"? 30 : 22);
+
+    const hp = Math.floor((baseHp + roomIndex*2.0) * d.enemyHp * (type==="summoner" ? 1.10 : 1.00));
+    
+    const sp =
+      (type==="chaser"? 62 :
+       type==="shooter"? 52 :
+       type==="skitter"? 84 :
+       type==="summoner"? 46 : 60) * (d.enemySpd * (1 + Math.min(0.25, roomIndex*0.02)));
+
+    const dmg =
+      (type==="chaser"? 6 :
+       type==="shooter"? 5 :
+       type==="skitter"? 4 :
+       type==="summoner"? 4 : 4) * d.enemyDmg;
+
+    const e = {
+      id: enemyIdSeq++,
+      type,x,y,
+      r: (type==="summoner" ? 12 : 10),
+      hp, maxHp:hp,
+      sp, dmg,
+      alive:true,
+      facing:Math.random()*TAU,
+      atkCd:Math.random()*0.9+0.2,
+      stun:0,
+      slow:0,
+      frozen:0,
+      worth: 18,       // score on kill (can override to 0 for summons)
+      summoned: false, // true for summoner-created mobs
+      // summoner AI
+      summonCd: (type==="summoner" ? (1.2 + Math.random()*0.8) : 0),
+    };
+    Object.assign(e, extra);
+    return e;
+  }
+
+  function spawnRoom(roomIndex){
+    buildRoom(roomIndex);
+    doorsOpen(false);
+    projs = []; fx = [];
+
+    player.x = ROOM_W/2; player.y = ROOM_H/2;
+    player.inv = 0;
+    player.basicCd = 0;
+    player.abilityCd = 0;
+    player.swingT = 0;
+    player.abilT = 0;
+
+    const d = DIFF[Number(diffSel.value)];
+    const diffNum = Number(diffSel.value);
+
+    const base = (roomIndex===1 ? 4 : 4 + Math.floor(roomIndex*1.2));
+    const count = Math.floor(base * d.spawn);
+
+    enemies = [];
+
+    // main mob mix (shifts with room; targets 50/30/20 by ~room 12; shooter capped at 20%)
+    const w = mobWeights(roomIndex, diffNum);
+    for(let i=0;i<count;i++){
+      const type = pickMobTypeFromWeights(w);
+      const p = randomFreeSpotAwayFromPlayer(roomIndex===1 ? 220 : 190);
+      enemies.push(makeEnemy(type, p.x, p.y, d, roomIndex));
+    }
+
+    // Summoner: guarantee 1 every room AFTER 13 (as requested); not counted in the mix
+    if(roomIndex >= 13){
+      const p = randomFreeSpotAwayFromPlayer(220);
+      enemies.push(makeEnemy("summoner", p.x, p.y, d, roomIndex));
+    }
+
+    if(enemies.filter(e=>e.alive).length===0) doorsOpen(true);
+    updateUI();
+  }
+
+  // FX / Screen shake
+  let shake = 0;
+  function popFx(x,y,kind, extra={}){
+    fx.push({x,y,t:0,kind, ...extra});
+  }
+  function shakeIt(a){ shake = Math.max(shake, a); }
+
+  function dealDamage(target, amount, knockX=0, knockY=0, stun=0, slow=0, freeze=0){
+    if(!target.alive) return;
+    target.hp -= amount;
+    popFx(target.x, target.y, amount>=22 ? "big" : "hit");
+    if(stun>0) target.stun = Math.max(target.stun, stun);
+    if(slow>0) target.slow = Math.max(target.slow, slow);
+    if(freeze>0) target.frozen = Math.max(target.frozen, freeze);
+    if(knockX||knockY) moveCircle(target, knockX, knockY);
+    if(target.hp<=0){
+      target.alive=false;
+      kills++;
+      score += (target.worth|0); // summoned mobs worth 0
+      popFx(target.x, target.y, "kill");
+    }
+  }
+
+  // INVINCIBILITY FRAMES
+  const IFRAME_SEC = 0.60;
+
+  function hurtPlayer(amount, knockX=0, knockY=0){
+    if(player.inv>0) return;
+    player.hp = clamp(player.hp - amount, 0, player.maxHp);
+    player.inv = IFRAME_SEC;
+    popFx(player.x, player.y, "hurt");
+    if(knockX||knockY) moveCircle(player, knockX, knockY);
+    shakeIt(6);
+    if(player.hp<=0) die();
+    updateUI();
+  }
+
+  function die(){
+    state='dead';
+    setStatus("You died.");
+    const cls = player.cls; // "frost" | "fire" | "blood"
+    bestByClass[cls] = Math.max(bestByClass[cls] || 0, Math.floor(score));
+    saveBestByClass(bestByClass);
+    uiBest.textContent = bestByClass[cls] || 0;
+
+    showModal(
+      "GAME OVER",
+      `Final Score: <span class="ok"><strong>${Math.floor(score)}</strong></span> • Rooms: <strong>${room}</strong> • Kills: <strong>${kills}</strong><br/>
+       Press <span class="kbd">N</span> to restart.`,
+      [],
+      ""
+    );
+  }
+
+  // Aim
+  function aimAngle(){
+    if(!mouse.inside) return player.facing;
+    return Math.atan2(mouse.wy - player.y, mouse.wx - player.x);
+  }
+
+  // Combat helpers
+  function hitArc(angle, range, widthDeg, dmg, options={}){
+    const half = (widthDeg * Math.PI/180)/2;
+    const { knock=0, stun=0, slow=0, freeze=0, requireLOS=false, onHit=null } = options;
+    let hits = 0;
+    for(const e of enemies){
+      if(!e.alive) continue;
+      const dx = e.x - player.x;
+      const dy = e.y - player.y;
+      const d = Math.hypot(dx,dy);
+      if(d > range + e.r) continue;
+
+      const ea = Math.atan2(dy,dx);
+      const da = Math.abs(angDiff(ea, angle));
+      if(da > half) continue;
+
+      if(requireLOS && !hasLOS(player.x,player.y,e.x,e.y)) continue;
+
+      const [nx,ny] = norm(dx,dy);
+      const shouldApply = (dmg !== 0) || knock || stun || slow || freeze;
+      if (shouldApply) {
+        dealDamage(e, dmg, nx*knock, ny*knock, stun, slow, freeze);
+      }
+
+      hits++;
+      onHit?.(e);
+    }
+    return hits;
+  }
+
+  function shootProjectile(angle, speed, dmg, kind, radius=5, extra={}){
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    projs.push({
+      x: player.x + dx*(player.r+7),
+      y: player.y + dy*(player.r+7),
+      vx: dx*speed,
+      vy: dy*speed,
+      r: radius,
+      dmg,
+      kind,
+      from: 'player',
+      life: 2.5,
+      ...extra
+    });
+    popFx(player.x + dx*18, player.y + dy*18, kind==="fireball" ? "fire" : "cast");
+  }
+
+  function enemyShoot(e){
+    const a = Math.atan2(player.y - e.y, player.x - e.x);
+    const sp = 220;
+    projs.push({
+      x: e.x + Math.cos(a)*(e.r+7),
+      y: e.y + Math.sin(a)*(e.r+7),
+      vx: Math.cos(a)*sp,
+      vy: Math.sin(a)*sp,
+      r: 5,
+      dmg: e.dmg,
+      kind: "shot",
+      from: 'enemy',
+      life: 2.2
+    });
+  }
+
+  function basicAttack(){
+    if(state!=='play') return;
+    if(player.basicCd>0) return;
+
+    const st = classStats();
+    player.basicCd = st.basicCd;
+    const a = aimAngle();
+    player.facing = a;
+    player.swingT = 0.12;
+
+    const mult = st.dmgMult;
+    const cls = CLASSES[player.cls];
+
+    if(player.cls==='frost'){
+      const base = cls.boltDmg * mult;
+      shootProjectile(a, 430, base, "frost", 5);
+    } else if(player.cls==='blood'){
+  // cost in HP-units (1 = half heart)
+        const cost = 1;
+        const minHpAfter = 2; // keep at least 2 half-hearts (1 full heart)
+
+  // if too low, don't allow the attack (and don't start cooldown)
+        if (player.hp - cost < minHpAfter) {
+             player.basicCd = 0;      // undo the cooldown you set earlier
+             player.swingT = 0;       // optional: cancel swing animation
+    // optional feedback:
+    popFx(player.x, player.y, "nope");
+    updateUI();
+    return;
+  }
+
+        player.hp -= cost;
+
+        const tier = bloodPowerTier();
+        const dmg = cls.boltDmgBase * bloodPowerMult(tier) * mult;
+        const radius = bloodProjRadius(tier);
+        shootProjectile(a, 400, dmg, "blood", radius, { bpTier: tier });
+
+    // optional: tiny feedback so it doesn’t feel like “random damage”
+      popFx(player.x, player.y, "hit"); // or a custom "bleed" fx if you have one
+}
+else {
+      const hits = hitArc(a, cls.coneRange, cls.coneWidthDeg, cls.coneDmg*mult, {
+        requireLOS:true,
+        knock: cls.basicKnock,
+        stun: cls.basicStun
+      });
+
+      if (hits > 0 && player.abilityCd > 0) {
+        const perHit = cls.cdRefundPerHit || 0;
+        const cap = cls.cdRefundCap ?? Infinity;
+
+        const expo = cls.cdRefundExpo ?? 0.8; // 0.5 = sqrt, 1 = linear
+        const scaledHits = Math.pow(hits, expo);
+
+        const refund = Math.min(cap, scaledHits * perHit);
+        player.abilityCd = Math.max(0, player.abilityCd - refund);
+      }
+
+
+      popFx(player.x + Math.cos(a)*28, player.y + Math.sin(a)*28, "slash");
+    }
+
+    updateUI();
+  }
+
+  ////// ABILITIES //////
+  function useAbility(){
+    if(state!=='play') return;
+    if(player.abilityCd>0) return;
+
+    const st = classStats();
+    player.abilityCd = st.abilityCd;
+    const a = aimAngle();
+    player.facing = a;
+    player.abilT = 0.18;
+
+    const mult = st.dmgMult;
+    const cls = CLASSES[player.cls];
+
+    if(player.cls==='frost'){
+      let hits = 0;
+      hits = hitArc(a, cls.freezeConeRange, cls.freezeConeWidthDeg, 0, { requireLOS:true });
+      const extra = Math.max(0, hits - 1);
+      const bonus = Math.min(cls.freezeBonusCap || 0, extra * (cls.freezeBonusPerExtraHit || 0));
+
+      hitArc(a, cls.freezeConeRange, cls.freezeConeWidthDeg, cls.freezeConeDmg*mult, {
+        requireLOS:true,
+        slow: 0.8,
+        freeze: cls.freezeDuration + bonus
+      });
+      popFx(player.x + Math.cos(a)*34, player.y + Math.sin(a)*34, "freeze");
+      shakeIt(4);
+    } else if(player.cls==='blood'){
+      const tier = bloodPowerTier();
+      const bp = bloodPowerMult(tier)
+      const hits = hitArc(a, cls.drainRange, cls.drainWidthDeg, cls.drainDmg*mult* bp * (tier-1), {
+        requireLOS:true,
+        knock: 6,
+        stun: 0.08
+      });
+      const healPerEnemyHearts = Math.max(0, tier-1);
+      const healHearts = Math.min(hits, 5) * healPerEnemyHearts;
+      if(healHearts>0){
+        player.hp = clamp(player.hp + healHearts*2, 0, player.maxHp);
+        popFx(player.x, player.y, "heal");
+      } else {
+        popFx(player.x + Math.cos(a)*22, player.y + Math.sin(a)*22, "drain");
+      }
+      shakeIt(3);
+      updateUI();
+    } else {
+      shootProjectile(
+        a,
+        cls.fireballSpeed,
+        cls.fireballDmg*mult,
+        "fireball",
+        cls.fireballRadius,
+        {
+          pierceLeft: cls.fireballPierce,
+          hitSet: new Set()
+        }
+      );
+      shakeIt(5);
+    }
+
+    updateUI();
+  }
+
+  // ===== Rewards (heal = 50% max HP) =====
+  function startRewards(){
+    state='reward';
+
+    const opt1 = { title:"Heal 50%", desc:"Restore 50% of your max HP.", apply: ()=>{
+      const healAmt = Math.max(2, Math.round(player.maxHp * 0.50));
+      player.hp = clamp(player.hp + healAmt, 0, player.maxHp);
+    }};
+
+    const opt2 = { title:"+2 Max Hearts", desc:"Increase max HP by 2 hearts.", apply: ()=>{
+      upgrades.maxHeartsBonus += 2;
+      recalcMaxHp(true);
+    }};
+
+    let opt3;
+    if(Math.random()<0.50){
+      const which = Math.random()<0.5 ? "Damage" : "Attack Speed";
+      if(which==="Damage"){
+        opt3 = { title:"More Damage", desc:"+15% damage.", apply: ()=>{ upgrades.dmgMult *= 1.15; } };
+      } else {
+        opt3 = { title:"Faster Basic", desc:"-15% basic cooldown.", apply: ()=>{ upgrades.basicCdMult *= 0.85; } };
+      }
+    } else {
+      opt3 = { title:"Faster Ability", desc:"-15% ability cooldown.", apply: ()=>{ upgrades.abilityCdMult *= 0.85; } };
+    }
+
+    showModal(
+      `ROOM ${room} CLEARED`,
+      `Choose <strong>one</strong> upgrade. Then the next room begins.`,
+      [opt1,opt2,opt3],
+      `Step on a green door to advance after clearing enemies.`
+    );
+  }
+
+  function chooseReward(r){
+    hideModal();
+    r.apply?.();
+    state='play';
+    room++;
+    setStatus(`Room ${room} — fight!`);
+    spawnRoom(room);
+    updateUI();
+  }
+
+  function recalcMaxHp(healSome){
+    const st = classStats();
+    const oldMax = player.maxHp;
+    player.maxHp = st.maxHp;
+    if(healSome) player.hp = clamp(player.hp + (player.maxHp-oldMax), 0, player.maxHp);
+    else player.hp = clamp(player.hp, 0, player.maxHp);
+    updateUI();
+  }
+
+  // Modal UI
+  function showModal(title, htmlText, rewardList, hint){
+    modalTitle.textContent = title;
+    modalText.innerHTML = htmlText;
+    modalHint.textContent = hint || "";
+    choicesBox.innerHTML = "";
+
+    if(rewardList && rewardList.length){
+      for(const r of rewardList){
+        const div = document.createElement('div');
+        div.className='choice';
+        div.innerHTML = `<div class="t">${r.title}</div><div class="d">${r.desc}</div>`;
+        div.addEventListener('click', ()=> chooseReward(r));
+        choicesBox.appendChild(div);
+      }
+    } else {
+      const div = document.createElement('div');
+      div.className='choice';
+      div.innerHTML = `<div class="t">OK</div><div class="d">${state==='paused' ? 'Resume' : state==='menu' ? 'Start' : 'Close'}</div>`;
+      div.addEventListener('click', ()=>{
+        if(state==='menu'){ start(); return; }
+        if(state==='paused'){ togglePause(); return; }
+        hideModal();
+      });
+      choicesBox.appendChild(div);
+    }
+
+    modal.style.display='flex';
+  }
+  function hideModal(){ modal.style.display='none'; }
+
+  // UI
+  function setStatus(t){ uiStatus.textContent = t; }
+
+  function renderHearts(){
+    uiHearts.innerHTML="";
+    const hearts = Math.ceil(player.maxHp/2);
+    const filled = Math.ceil(player.hp/2);
+    for(let i=0;i<hearts;i++){
+      const h = document.createElement('span');
+      h.className = 'heart' + (i<filled ? '' : ' empty');
+      h.appendChild(document.createElement('i'));
+      uiHearts.appendChild(h);
+    }
+  }
+
+  function updateUI(){
+    const cls = player ? player.cls : "frost";      // display best score for each class stuff?
+    uiBest.textContent = bestByClass[cls] || 0;
+
+    uiScore.textContent = Math.floor(score);
+    uiRoom.textContent = room;
+    uiKills.textContent = kills;
+    uiClass.textContent = player ? CLASSES[player.cls].name : "—";
+    uiBestClass.textContent = player ? player.cls.toUpperCase() : "—";
+    uiInv.textContent = player ? (player.inv>0 ? player.inv.toFixed(2)+"s" : "0.00s") : "—";
+
+    if(!player) return;
+
+    const st = classStats();
+    const b = 1 - clamp(player.basicCd / (st.basicCd||1), 0, 1);
+    const a = 1 - clamp(player.abilityCd / (st.abilityCd||1), 0, 1);
+    barBasic.style.width = `${Math.floor(b*100)}%`;
+    barAbility.style.width = `${Math.floor(a*100)}%`;
+
+    if(player.cls === 'blood'){
+      uiBloodPill.style.display = '';
+      uiBloodPower.textContent = String(bloodPowerTier());
+    } else {
+      uiBloodPill.style.display = 'none';
+      uiBloodPower.textContent = '—';
+    }
+
+    renderHearts();
+  }
+
+  // Start/reset
+  function resetRun(){
+    room=1; score=0; kills=0; projs=[]; fx=[];
+    upgrades = { dmgMult:1, moveMult:1, basicCdMult:1, abilityCdMult:1, maxHeartsBonus:0 };
+
+    const cls = classSel.value;
+    const base = CLASSES[cls];
+    player = {
+      cls,
+      x: ROOM_W/2, y: ROOM_H/2,
+      r: 9,
+      facing: 0,
+      hp: base.baseMaxHearts*2,
+      maxHp: base.baseMaxHearts*2,
+      inv:0,
+      basicCd:0,
+      abilityCd:0,
+      swingT:0,
+      abilT:0,
+    };
+    player.maxHp = classStats().maxHp;
+    player.hp = player.maxHp;
+
+    spawnRoom(room);
+    updateUI();
+    setStatus("Room 1 — fight!");
+    uiTip.textContent = "Tip: Hit more enemies with cone attacks to increase their effectiveness (i.e. freeze time, healing, or cooldown reduction).";
+  }
+
+  function start(){
+    hideModal();
+    state='play';
+    resetRun();
+  }
+
+  function restart(){
+    hideModal();
+    state='play';
+    resetRun();
+  }
+
+  function togglePause(){
+    if(state==='play'){
+      state='paused';
+      setStatus("Paused");
+      showModal("PAUSED",`Press <span class="kbd">Esc</span> to resume.`,[], "");
+    } else if(state==='paused'){
+      hideModal();
+      state='play';
+      setStatus(`Room ${room} — fight!`);
+    }
+  }
+
+  btnStart.addEventListener('click', start);
+  btnRestart.addEventListener('click', restart);
+  btnPause.addEventListener('click', togglePause);
+
+  // ===== Enemy movement with simple pathing improvement + separation (less blobbing) =====
+  function sampleMoveDir(e, toX, toY){
+    const baseAng = Math.atan2(toY - e.y, toX - e.x);
+    const candidates = [];
+    for(let i=0;i<10;i++){
+      const ang = baseAng + (i===0 ? 0 : (i%2?1:-1) * (0.45 + 0.28*(i/2)));
+      const vx = Math.cos(ang), vy = Math.sin(ang);
+      candidates.push([vx,vy]);
+    }
+
+    let best = null;
+    for(const [vx,vy] of candidates){
+      const px = e.x + vx*18;
+      const py = e.y + vy*18;
+      if(circleHitsSolid(px, py, e.r)) continue;
+
+      const dNow = dist2(e.x,e.y,toX,toY);
+      const dNew = dist2(px,py,toX,toY);
+      const progress = (dNow - dNew);
+
+      const tx = Math.floor(px/TILE), ty=Math.floor(py/TILE);
+      let nearWalls = 0;
+      for(const [ox,oy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const v = gGet(tx+ox, ty+oy);
+        if(v===1 || v===2) nearWalls++;
+      }
+      const score = progress - nearWalls*40;
+
+      if(!best || score > best.score){
+        best = {vx,vy,score};
+      }
+    }
+    return best ? [best.vx,best.vy] : [Math.cos(baseAng), Math.sin(baseAng)];
+  }
+
+  function separationVec(e){
+    let sx=0, sy=0;
+    const minD = 22;
+    const minD2 = minD*minD;
+    for(const o of enemies){
+      if(o===e || !o.alive) continue;
+      const dx = e.x - o.x;
+      const dy = e.y - o.y;
+      const d2 = dx*dx+dy*dy;
+      if(d2>0.0001 && d2 < minD2){
+        const d = Math.sqrt(d2);
+        const push = (minD - d) / minD;
+        sx += (dx/d) * push;
+        sy += (dy/d) * push;
+      }
+    }
+    return [sx,sy];
+  }
+
+  // Summoner: static spawn rates (45% chaser, 45% skitter, 10% shooter), spawns NEXT to summoner, no max count, worth 0 score
+  function pickSummonType(){
+    const r = Math.random();
+    if(r < 0.45) return "chaser";
+    if(r < 0.95) return "skitter";
+    return "shooter";
+  }
+
+  function trySummonNearSummoner(s){
+    const spot = randomFreeSpotNear(s.x, s.y, 22, 44);
+    if(!spot) return false;
+    const d = DIFF[Number(diffSel.value)];
+    const t = pickSummonType();
+    enemies.push(makeEnemy(t, spot.x, spot.y, d, room, { summoned:true, worth:0 }));
+    popFx(spot.x, spot.y, "cast");
+    return true;
+  }
+
+  // Main loop + drawing
+  let lastT = performance.now();
+
+  function update(dt){
+    if(state!=='play') return;
+
+    const st = classStats();
+    player.basicCd = Math.max(0, player.basicCd - dt);
+    player.abilityCd = Math.max(0, player.abilityCd - dt);
+    player.inv = Math.max(0, player.inv - dt);
+    player.swingT = Math.max(0, player.swingT - dt);
+    player.abilT = Math.max(0, player.abilT - dt);
+
+    shake = Math.max(0, shake - dt*18);
+
+    // Move
+    let ax=0, ay=0;
+    if(keys.has('w')) ay -= 1;
+    if(keys.has('s')) ay += 1;
+    if(keys.has('a')) ax -= 1;
+    if(keys.has('d')) ax += 1;
+    if(ax||ay){
+      const [nx,ny] = norm(ax,ay);
+      moveCircle(player, nx*st.moveSpd*dt, ny*st.moveSpd*dt);
+      if(!mouse.inside) player.facing = Math.atan2(ny,nx);
+    }
+    if(mouse.inside) player.facing = aimAngle();
+
+    if(keys.has(' ')) basicAttack();
+
+    // Doors: step on open door tile
+    if(doorsAreOpen()){
+      const tx = Math.floor(player.x / TILE);
+      const ty = Math.floor(player.y / TILE);
+      if(gGet(tx,ty)===3){
+        startRewards();
+        return;
+      }
+    }
+
+    let aliveCount=0;
+
+    for(const e of enemies){
+      if(!e.alive) continue;
+      aliveCount++;
+
+      e.atkCd = Math.max(0, e.atkCd - dt);
+      e.stun = Math.max(0, e.stun - dt);
+      e.slow = Math.max(0, e.slow - dt);
+      e.frozen = Math.max(0, e.frozen - dt);
+      if(e.type==="summoner") e.summonCd = Math.max(0, (e.summonCd||0) - dt);
+
+      const dx = player.x - e.x;
+      const dy = player.y - e.y;
+      const dist = Math.hypot(dx,dy);
+      const [nx,ny] = norm(dx,dy);
+
+      if(e.frozen>0) continue;
+      if(e.stun>0) continue;
+
+      const slowMult = e.slow>0 ? 0.40 : 1.0;
+      const sp = e.sp * slowMult;
+
+      const toP = Math.atan2(dy,dx);
+      const turn = clamp(angDiff(toP, e.facing), -2.4*dt, 2.4*dt);
+      e.facing = angNorm(e.facing + turn);
+
+      const canSee = hasLOS(e.x,e.y, player.x,player.y);
+      const [sx,sy] = separationVec(e);
+
+      if(e.type==="chaser"){
+        let mvx=nx, mvy=ny;
+        if(!canSee) [mvx,mvy] = sampleMoveDir(e, player.x, player.y);
+        mvx += sx*1.4; mvy += sy*1.4;
+        [mvx,mvy] = norm(mvx,mvy);
+        moveCircle(e, mvx*sp*dt, mvy*sp*dt);
+        if(dist < e.r + player.r + 4) hurtPlayer(e.dmg, nx*8, ny*8);
+      } else if(e.type==="skitter"){
+        let mvx=nx, mvy=ny;
+        if(!canSee){
+          [mvx,mvy] = sampleMoveDir(e, player.x, player.y);
+        } else {
+          const ox=-ny, oy=nx;
+          const blend = (dist<120)?0.55:0.25;
+          const vx = nx*(1-blend)+ox*blend;
+          const vy = ny*(1-blend)+oy*blend;
+          const nrm = norm(vx,vy);
+          mvx=nrm[0]; mvy=nrm[1];
+        }
+        mvx += sx*1.2; mvy += sy*1.2;
+        [mvx,mvy] = norm(mvx,mvy);
+        moveCircle(e, mvx*sp*1.05*dt, mvy*sp*1.05*dt);
+        if(dist < e.r + player.r + 3) hurtPlayer(e.dmg, mvx*6, mvy*6);
+      } else if(e.type==="summoner"){
+        // Summoner: tries to keep distance + summons beside itself. (Summons worth 0 score.)
+        // Movement similar to shooter (kite), but slower.
+        if(!canSee){
+          const m = sampleMoveDir(e, player.x, player.y);
+          let mvx=m[0], mvy=m[1];
+          mvx += sx*1.1; mvy += sy*1.1;
+          [mvx,mvy] = norm(mvx,mvy);
+          moveCircle(e, mvx*sp*0.60*dt, mvy*sp*0.60*dt);
+        } else {
+          if(dist < 180) moveCircle(e, -nx*sp*0.65*dt, -ny*sp*0.65*dt);
+          else if(dist > 450) moveCircle(e, nx*sp*0.25*dt, ny*sp*0.25*dt);
+        }
+
+        // optional weak shots (keeps pressure)
+        // if(e.atkCd<=0 && dist<420 && canSee){
+        //   e.atkCd = 1.85 + Math.random()*0.45;
+        //   enemyShoot(e);
+        // }
+
+        // summoning
+        if((e.summonCd||0) <= 0){
+          // summon faster later / harder, but no hard cap
+          const diffNum = Number(diffSel.value);
+            // higher first number means slower minion creation
+          const cdBase = 5.0 - Math.min(0.8, room*0.02) - (diffNum-2)*0.18; // room lowers cd; harder lowers cd
+          e.summonCd = clamp(cdBase + Math.random()*0.6, 1.1, 3.2);
+          // try 1-2 summons depending on difficulty
+          // if difficulty=4 then try 2, otherwise try 1 
+          const tries = (diffNum>=4 ? 2 : 1);
+          for(let i=0;i<tries;i++) trySummonNearSummoner(e);
+        }
+
+        if(dist < e.r + player.r + 3) hurtPlayer(e.dmg, nx*6, ny*6);
+      } else {
+        // shooter
+        if(!canSee){
+          const m = sampleMoveDir(e, player.x, player.y);
+          let mvx=m[0], mvy=m[1];
+          mvx += sx*1.1; mvy += sy*1.1;
+          [mvx,mvy] = norm(mvx,mvy);
+          moveCircle(e, mvx*sp*0.55*dt, mvy*sp*0.55*dt);
+        } else {
+          if(dist < 155) moveCircle(e, -nx*sp*0.55*dt, -ny*sp*0.55*dt);
+          else if(dist > 260) moveCircle(e, nx*sp*0.35*dt, ny*sp*0.35*dt);
+        }
+        if(e.atkCd<=0 && dist<380 && canSee){
+          e.atkCd = 1.55 + Math.random()*0.35;
+          enemyShoot(e);
+        }
+      }
+    }
+
+    // Projectiles
+    for (const p of projs) {
+      p.life -= dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      // Wall collision (fireball explodes on wall)
+      if (circleHitsSolid(p.x, p.y, p.r)) {
+        if (p.from === "player" && p.kind === "fireball") {
+          explodeFireball(p.x, p.y, p, null);
+        }
+        p.life = -1;
+        popFx(p.x, p.y, p.kind === "fireball" ? "fire" : "hit");
+        continue;
+      }
+
+      // Player projectiles: hit enemies
+      if (p.from === "player") {
+        for (const e of enemies) {
+          if (!e.alive) continue;
+
+          const hit = dist2(p.x, p.y, e.x, e.y) < (p.r + e.r) * (p.r + e.r);
+          if (!hit) continue;
+
+          if (p.kind === "frost") {
+            const cls = CLASSES.frost;
+            const mult = classStats().dmgMult;
+            const bonus = (e.frozen > 0) ? cls.boltBonusVsFrozen * mult : 0;
+
+            dealDamage(
+              e,
+              p.dmg + bonus,
+              (p.vx > 0 ? 3 : -3),
+              (p.vy > 0 ? 3 : -3),
+              0.02,
+              0.0,
+              0.0
+            );
+
+            popFx(e.x, e.y, e.frozen > 0 ? "big" : "hit");
+
+            p.life = -1;
+            break;
+          }
+          else if (p.kind === "fireball") {
+            if (p.hitSet && p.hitSet.has(e)) continue;
+            if (p.hitSet) p.hitSet.add(e);
+
+            dealDamage(e, p.dmg, 0, 0, 0.10);
+
+            if ((p.pierceLeft | 0) > 0) {
+              p.pierceLeft--;
+
+              const [vx, vy] = norm(p.vx, p.vy);
+              p.x += vx * (e.r + p.r + 1);
+              p.y += vy * (e.r + p.r + 1);
+
+              continue;
+            }
+
+            explodeFireball(p.x, p.y, p, e);
+            p.life = -1;
+            break;
+          }
+          else {
+            dealDamage(
+              e,
+              p.dmg,
+              (p.vx > 0 ? 3 : -3),
+              (p.vy > 0 ? 3 : -3),
+              0.02
+            );
+
+            p.life = -1;
+            break;
+          }
+        }
+      }
+      // Enemy projectiles: hit player
+      else {
+        const hitPlayer =
+          dist2(p.x, p.y, player.x, player.y) < (p.r + player.r) * (p.r + player.r);
+
+        if (hitPlayer) {
+          const [kx, ky] = norm(p.vx, p.vy);
+          hurtPlayer(p.dmg, kx * 7, ky * 7);
+          p.life = -1;
+        }
+      }
+    }
+
+    projs = projs.filter(p => p.life > 0);
+
+    for(const f of fx) f.t += dt;
+    fx = fx.filter(f=>f.t<0.45);
+
+    if(aliveCount===0){
+      doorsOpen(true);
+      setStatus(`Room ${room} cleared — doors open!`);
+    }
+
+    // this is at the end of update(dt)
+    const cls = player.cls;
+    const s = Math.floor(score);
+    if (s > (bestByClass[cls] || 0)) {
+        bestByClass[cls] = s;
+        saveBestByClass(bestByClass);
+    }
+    updateUI();
+
+  }
+  // end update(dt)
+
+  function explodeFireball(x,y,p,hitEnemy){
+    const cls = CLASSES[player.cls] || CLASSES.fire;
+
+    for(const e of enemies){
+      if(!e.alive) continue;
+      const d = Math.hypot(e.x-x, e.y-y);
+      if(d < cls.fireballSplash){
+        const t = 1 - clamp(d/cls.fireballSplash, 0, 1);
+        const dmg = p.dmg * (0.70 + 0.70*t);
+        const [nx,ny] = norm(e.x-x, e.y-y);
+        dealDamage(e, dmg, nx*10*t, ny*10*t, 0.14);
+      }
+    }
+
+    popFx(x, y, "boom", { rad: cls.fireballSplash });
+    popFx(x,y,"fire");
+    shakeIt(10);
+  }
+
+  function drawArcPreview(x,y,a,range,widthDeg,color,alpha){
+    const half = (widthDeg*Math.PI/180)/2;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.arc(x,y,range, a-half, a+half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function bloodColorForTier(tier){
+    if(tier===1) return "rgba(255,120,120,0.70)";
+    if(tier===2) return "rgba(255,90,90,0.85)";
+    if(tier===3) return "rgba(235,55,55,0.95)";
+    return "rgba(190,20,35,0.98)";
+  }
+
+  function draw(){
+    ctx.fillStyle="#000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if(!player){
+      ctx.fillStyle="#0b1118";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="rgba(255,255,255,.85)";
+      ctx.font="bold 18px ui-sans-serif, system-ui";
+      ctx.textAlign="center";
+      ctx.fillText("Honors Arcana (3 Mages)", canvas.width/2, canvas.height/2 - 10);
+      ctx.fillStyle="rgba(255,255,255,.55)";
+      ctx.font="14px ui-sans-serif, system-ui";
+      ctx.fillText("Click Start (or press Enter)", canvas.width/2, canvas.height/2 + 18);
+      ctx.textAlign="left";
+      return;
+    }
+
+    ctx.save();
+    ctx.translate(view.ox, view.oy);
+    ctx.scale(view.s, view.s);
+
+    if(shake>0){
+      const sx = (Math.random()*2-1) * (shake/view.s);
+      const sy = (Math.random()*2-1) * (shake/view.s);
+      ctx.translate(sx, sy);
+    }
+
+    // floor
+    ctx.fillStyle="#0b1118";
+    ctx.fillRect(0,0,ROOM_W,ROOM_H);
+
+    // tiles
+    for(let ty=0; ty<GRID_H; ty++){
+      for(let tx=0; tx<GRID_W; tx++){
+        const v = grid[ty][tx];
+        if(v===0) continue;
+        const x=tx*TILE, y=ty*TILE;
+        if(v===1){
+          ctx.fillStyle="#2a3340"; ctx.fillRect(x,y,TILE,TILE);
+          ctx.fillStyle="rgba(0,0,0,.22)"; ctx.fillRect(x+2,y+2,TILE-4,TILE-4);
+        } else if(v===2){
+          ctx.fillStyle="#3a2f1b"; ctx.fillRect(x,y,TILE,TILE);
+          ctx.fillStyle="rgba(255,210,74,.18)"; ctx.fillRect(x+4,y+4,TILE-8,TILE-8);
+        } else if(v===3){
+          ctx.fillStyle="#0f1a14"; ctx.fillRect(x,y,TILE,TILE);
+          ctx.fillStyle="rgba(98,255,165,.40)"; ctx.fillRect(x+3,y+3,TILE-6,TILE-6);
+        }
+      }
+    }
+
+    // Range previews
+    const a = player.facing;
+    if(state==='play'){
+      if(player.cls==='fire'){
+        const cls=CLASSES.fire;
+        drawArcPreview(player.x, player.y, a, cls.coneRange, cls.coneWidthDeg, "rgba(255,180,74,0.11)", 1);
+      } else if(player.cls==='blood'){
+        const cls=CLASSES.blood;
+        if(player.abilityCd<=0) drawArcPreview(player.x, player.y, a, cls.drainRange, cls.drainWidthDeg, "rgba(255,74,74,0.15)", 1);
+      } else if(player.cls==='frost'){
+        const cls=CLASSES.frost;
+        if(player.abilityCd<=0) drawArcPreview(player.x, player.y, a, cls.freezeConeRange, cls.freezeConeWidthDeg, "rgba(102,166,255,0.10)", 1);
+      }
+    }
+
+    // projectiles
+    for(const p of projs){
+      if(p.from==='enemy'){
+        ctx.fillStyle="#ffb24a";
+      } else {
+        if(p.kind==="frost") ctx.fillStyle="#66a6ff";
+        else if(p.kind==="blood") ctx.fillStyle=bloodColorForTier(p.bpTier||2);
+        else if(p.kind==="fireball") ctx.fillStyle="#ffd24a";
+        else ctx.fillStyle="#9a7bff";
+      }
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.fill();
+
+      if(p.kind==="fireball"){
+        ctx.globalAlpha=0.22;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*2.25,0,TAU); ctx.fill();
+        ctx.globalAlpha=1;
+      }
+      if(p.kind==="blood"){
+        ctx.globalAlpha=0.14;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*1.9,0,TAU); ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    }
+
+    // enemies
+    for(const e of enemies){
+      if(!e.alive) continue;
+      const frozen = e.frozen>0;
+
+      // color by type
+      ctx.fillStyle = frozen ? "rgba(150,220,255,0.95)" :
+                    e.type==="summoner" ? "#74ffcf" :
+                    e.type==="chaser" ? "#ff5a5a" :
+                    e.type==="shooter" ? "#ffb84a" :
+                    "#ff7bff"; // skitter
+
+      ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,TAU); ctx.fill();
+
+      // eye
+      ctx.fillStyle="rgba(0,0,0,.55)";
+      ctx.beginPath(); ctx.arc(e.x+Math.cos(e.facing)*5, e.y+Math.sin(e.facing)*5, 3, 0, TAU); ctx.fill();
+
+      // hp bar
+      const w=26,h=4;
+      ctx.fillStyle="rgba(0,0,0,.35)";
+      ctx.fillRect(e.x-w/2, e.y-e.r-10, w, h);
+      ctx.fillStyle="rgba(255,210,74,.85)";
+      ctx.fillRect(e.x-w/2, e.y-e.r-10, w*(e.hp/e.maxHp), h);
+
+      // summoner cue
+      if(e.type==="summoner"){
+        ctx.globalAlpha = 0.25;
+        ctx.strokeStyle = "rgba(98,255,165,1)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(e.x,e.y,e.r+5,0,TAU);
+        ctx.stroke();
+        ctx.lineWidth=1;
+        ctx.globalAlpha=1;
+      }
+
+      if(e.frozen>0.01){
+        ctx.fillStyle="rgba(102,166,255,.9)";
+        ctx.fillRect(e.x-10, e.y-e.r-16, 20, 3);
+      }
+    }
+
+    // player
+    const invFlash = player.inv>0 ? (0.5 + 0.5*Math.sin(performance.now()*0.03)) : 1;
+    ctx.globalAlpha = invFlash;
+
+    let ring = "#66a6ff";
+    if(player.cls==='blood') ring="#ff4a4a";
+    if(player.cls==='fire') ring="#ffd24a";
+
+    ctx.fillStyle="#e8edf2";
+    ctx.beginPath(); ctx.arc(player.x,player.y,player.r,0,TAU); ctx.fill();
+
+    ctx.strokeStyle=ring; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(player.x,player.y,player.r-1,0,TAU); ctx.stroke();
+    ctx.lineWidth=1; ctx.globalAlpha=1;
+
+    // aim line
+    ctx.strokeStyle="rgba(255,255,255,.22)";
+    ctx.beginPath();
+    ctx.moveTo(player.x,player.y);
+    ctx.lineTo(player.x+Math.cos(player.facing)*24, player.y+Math.sin(player.facing)*24);
+    ctx.stroke();
+
+    // ability FX
+    if(player.abilT>0){
+      const t = player.abilT/0.18;
+      if(player.cls==='frost'){
+        drawArcPreview(player.x, player.y, player.facing, CLASSES.frost.freezeConeRange+2, CLASSES.frost.freezeConeWidthDeg+2, "rgba(102,166,255,0.16)", t);
+      } else if(player.cls==='blood'){
+        const cls=CLASSES.blood;
+        drawArcPreview(player.x, player.y, player.facing, cls.drainRange+3, cls.drainWidthDeg+3, "rgba(255,74,74,0.14)", t);
+      } else {
+        ctx.globalAlpha = 0.18*t;
+        ctx.fillStyle = "rgba(255,210,74,0.9)";
+        ctx.beginPath();
+        ctx.arc(player.x+Math.cos(player.facing)*24, player.y+Math.sin(player.facing)*24, 22 + (1-t)*16, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // fx
+    for(const f of fx){
+      const a = 1 - clamp(f.t/0.45,0,1);
+
+      if(f.kind==="boom"){
+        const rad = f.rad || 50;
+        const grow = 1 + (1-a)*0.05;
+        ctx.globalAlpha = 0.22*a;
+        ctx.strokeStyle = "rgba(255,210,74,1)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(f.x,f.y, rad*grow, 0, TAU);
+        ctx.stroke();
+
+        ctx.globalAlpha = 0.08*a;
+        ctx.fillStyle = "rgba(255,210,74,1)";
+        ctx.beginPath();
+        ctx.arc(f.x,f.y, rad*grow, 0, TAU);
+        ctx.fill();
+
+        ctx.lineWidth=1;
+        ctx.globalAlpha=1;
+        continue;
+      }
+
+      ctx.globalAlpha = 0.26*a;
+      ctx.fillStyle =
+        f.kind==="freeze" ? "#66a6ff" :
+        f.kind==="heal" ? "#62ffa5" :
+        f.kind==="fire" ? "#ffd24a" :
+        f.kind==="drain" ? "#ff4a4a" :
+        f.kind==="hurt" ? "#ff4a4a" :
+        f.kind==="kill" ? "#62ffa5" :
+        f.kind==="cast" ? "#9a7bff" :
+        "#ffffff";
+      ctx.beginPath();
+      ctx.arc(f.x,f.y, 10 + f.t*44, 0, TAU);
+      ctx.fill();
+      ctx.globalAlpha=1;
+    }
+
+    ctx.restore();
+  }
+
+  // Boot modal (OK starts the game)
+  showModal(
+    "READY",
+    `Pick a mage and difficulty, then press <span class="kbd">Start</span> (or click OK).<br/>
+     <span class="muted">Frost: freeze crowds and hit harder against frozen targets.
+                         Blood: trade your HP for power and drain life from your enemies.
+                         Fire: use short cone attacks to recharge devastating fireballs.</span>`,
+    [],
+    "Tip: You get i-frames after taking damage to prevent instant multi-hit deaths."
+  );
+  setStatus("Ready");
+
+  // Loop
+  lastT = performance.now();
+  function frame(now){
+    const dt = Math.min(0.033, (now-lastT)/1000);
+    lastT = now;
+    if(state==='play') update(dt);
+    draw();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>

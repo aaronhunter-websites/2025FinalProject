@@ -1,0 +1,270 @@
+/* =========================================================
+   Aaron Hunter – Simple Professional Theme (single CSS file)
+   - Clean typography, subtle colors, strong readability
+   - Works for index.html, resume.html, theatre.html
+   ========================================================= */
+
+/* ---- CSS Reset-ish ---- */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img { max-width: 100%; height: auto; }
+a { color: inherit; }
+
+/* ---- Theme Tokens ---- */
+:root{
+  --bg: #0b1220;
+  --panel: #101a2f;
+  --panel2: #0f1930;
+  --text: #e8eefc;
+  --muted: #b7c5eb;
+  --border: rgba(255,255,255,0.10);
+  --accent: #88b4ff;
+  --accent2: #7de2d1;
+  --shadow: 0 18px 45px rgba(0,0,0,0.35);
+
+  --max: 1050px;
+  --radius: 16px;
+}
+
+/* ---- Page base ---- */
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1000px 700px at 15% -10%, rgba(136,180,255,0.25), transparent 55%),
+              radial-gradient(900px 700px at 110% 10%, rgba(125,226,209,0.18), transparent 60%),
+              var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* ---- Layout ---- */
+.container{
+  width: min(var(--max), calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 64px;
+}
+
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---- Top nav ---- */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  background: rgba(11,18,32,0.72);
+  border-bottom: 1px solid var(--border);
+}
+.topbar .inner{
+  width: min(var(--max), calc(100% - 40px));
+  margin: 0 auto;
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand{
+  font-weight: 750;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.navlinks{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
+}
+.navlinks a{
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+.navlinks a:hover{
+  color: var(--text);
+  border-color: var(--border);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ---- Buttons / chips ---- */
+.btnrow{ display: flex; flex-wrap: wrap; gap: 10px; }
+.button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 650;
+}
+.button:hover{
+  border-color: rgba(136,180,255,0.55);
+  background: rgba(136,180,255,0.10);
+}
+.button.secondary:hover{
+  border-color: rgba(125,226,209,0.55);
+  background: rgba(125,226,209,0.10);
+}
+.pill{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* ---- Home hero ---- */
+.hero{
+  padding: 26px;
+}
+.herogrid{
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 860px){
+  .herogrid{ grid-template-columns: 1fr; }
+}
+h1{ font-size: clamp(28px, 3.6vw, 44px); line-height: 1.05; margin: 0 0 8px; }
+h2{ margin: 18px 0 8px; font-size: 1.2rem; }
+h3{ margin: 16px 0 6px; font-size: 1.02rem; color: var(--text); }
+p{ margin: 8px 0; color: var(--muted); }
+
+.kv{
+  padding: 18px;
+  border-radius: var(--radius);
+  background: rgba(0,0,0,0.18);
+  border: 1px solid var(--border);
+}
+.kv strong{ color: var(--text); }
+.kv a{ color: var(--accent); text-decoration: none; }
+.kv a:hover{ text-decoration: underline; }
+
+/* ---- Resume layout ---- */
+.resume{
+  padding: 26px;
+}
+.resumeHeader{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.resumeHeader .titleBlock{ min-width: 240px; }
+.resumeHeader .titleBlock .name{
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 0;
+}
+.resumeHeader .titleBlock .tagline{
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+.contactLine{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--muted);
+}
+.contactLine a{ text-decoration: none; color: var(--accent); }
+.contactLine a:hover{ text-decoration: underline; }
+
+.section{
+  margin-top: 18px;
+  padding-top: 6px;
+}
+.sectionTitle{
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.entry{
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.13);
+}
+.entry:last-child{ border-bottom: none; }
+.entryHeader{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.entryHeader .left{
+  font-weight: 750;
+  color: var(--text);
+}
+.entryHeader .right{
+  color: var(--muted);
+  white-space: nowrap;
+}
+.entrySub{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 2px;
+  color: var(--muted);
+}
+.entry ul{
+  margin: 8px 0 0 18px;
+  color: var(--muted);
+}
+.tags{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags .pill{ background: rgba(136,180,255,0.08); border-color: rgba(136,180,255,0.18); }
+
+/* ---- Theatre page ---- */
+.grid2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 860px){
+  .grid2{ grid-template-columns: 1fr; }
+}
+.listClean{
+  margin: 8px 0 0 18px;
+  color: var(--muted);
+}
+
+/* ---- Footer ---- */
+.footer{
+  margin-top: 18px;
+  padding: 16px;
+  text-align: center;
+  color: rgba(183,197,235,0.75);
+  border-top: 1px solid var(--border);
+}
+
+/* ---- Print styles (resume prints nicely) ---- */
+@media print{
+  :root{ --bg:#fff; --text:#000; --muted:#222; --border:rgba(0,0,0,0.20); --panel:#fff; }
+  body{ background: #fff !important; color: #000 !important; }
+  .topbar, .footer, .btnrow{ display: none !important; }
+  .card{ box-shadow: none !important; border: none !important; }
+  .resume{ padding: 0 !important; }
+  a{ color: #000 !important; text-decoration: none !important; }
+}

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- change what displays in the tab thing at the top -->
+    <title>Aaron Hunter Homepage</title>
+    <!-- connect to the CSS file -->
+    <link rel="stylesheet" href="Styles/finalstyles.css"> 
+
+</head>
+<body id="top">
+   <br>
+    <div class="box header">
+         <h1>Aaron Hunter Scratch Page</h1>
+         <a href="index.html"
+         target="_blank"
+         >Professional Home Page</a> |
+         
+         <a href="resume.html"
+            target="_blank"> Professional Resume</a> |
+         
+         <a
+            href="https://www.linkedin.com/in/Aaron-B-Hunter/"
+            target="_blank"
+            title="LinkedIn page for Aaron Hunter"
+            > LinkedIn</a> |
+         
+         <a href="https://youtu.be/dQw4w9WgXcQ?si=EwAFiyAPLHSWB3BL"
+            target="_blank"
+            > Bonus</a>
+    </div>
+    <h2>About my Game: <em>Honors Arcana</em></h2>
+
+    <!-- Navigation Box -->
+    <div class="navigation">
+      <h3>Navigation</h3>
+         <a href="#top">Back to Top</a>
+         <a href="#concept">Concept & Gameplay</a>
+         <a href="#classes">The Mage Classes</a>
+         <a href="#enemies">Enemy Types</a>
+         <a href="#youtube">YouTube Embed</a>
+         <a href="#tableau">Tableau Embed</a>
+
+         <button onclick="window.open('honorsArcana.html', '_blank')" title="Play Dungeon Dash!">
+                Play Honors Arcana</button>
+    </div>
+    <!-- End of Navigation Box -->
+
+   <div class="content">
+      <h3 id="concept">Concept & Gameplay</h3>
+      <p><em>Honors Arcana</em> is a single player roguelike game designed by Aaron Hunter for the final project of IS 201. 
+         My initial idea for this project, was to do the meme of running <em>Doom</em> in a comically simple medium. 
+         Look up "weird things people have used to play Doom" and you'll see what I mean. As such, my first game attempt was 
+         a <em>Doom</em> rip off, which you can play <a href="doomish.html">here.</a> Honestly, I'm impressed that AI was able 
+         to make a 3 dimensional game in a single html file at all, but because it was trying to meet a higher standard 
+         (3d), its failure to do so made it feel painfully low quality.
+      </p>
+      <p>
+         Accordingly, I decided that it would be better to have a simple game that was designed well than a complicated 
+         one that felt cheap. Inspired by early video games such as <em>Legend of Zelda, Pac-Man,</em> and <em>Earthbound,</em> 
+         I wanted to create an arcade-like top-down game with an emphasis on different fantasy classes. However, 
+         I realized that the classic fantasy party (consisting of a warrior, a rogue, a priest, and a mage) would be difficult 
+         to implement in this context. </p>
+      <p>
+         I had ideas for game mechanics I thought would be cool, but several of them were too 
+         complex for this project. I ended up keeping the vibe of these ideas (largely inspired by MOBAs), just 
+         reducing the scope to be just about mages. Each mage class has a basic attack and a cooldown-based ability, the details
+         of which are described below.
+      </p>
+
+         <br> 
+
+      <h3 id="classes">The Mage Classes</h3>
+      <div class="classes">
+
+         <h4>Frost</h4>
+            <p>
+               The frost mage's ability is a large cone that freezes all enemies it hits for a short duration,
+               which gets longer for each additional enemy caught in the cone. Although the frost mage's basic attack
+               deals low damage normally, it deals significant bonus damage to frozen enemies.
+            </p>
+
+         <h4>Blood</h4>
+            
+            <p>
+            The blood mage's basic attack costs 1 heart per use, but cannot use their last heart. Their ability is a short cone
+            that deals damage (blood power increases damage of ability more than basic attack) and restores hearts per enemies hit.</p>
+            
+            The blood mage's unique mechanic, blood power, corresponds to their current hit points relative to their max
+            and affects both their ability and their basic attacks:
+            <ul>
+                  <li>Blood Power 1: mage has 76% or more of their total health remaining</li>
+                     <ul>
+                        <li>Mage deals 50% less damage</li>
+                        <li>Ability does not heal</li>
+                     </ul>
+                     <br>
+
+                  <li>Blood Power 2: mage has 75% or less of their total health remaining</li>
+                     <ul>
+                        <li>Mage deals normal damage</li>
+                        <li>Ability heals 1 heart per enemy hit</li>
+                     </ul>
+                     <br>
+
+                  <li>Blood Power 3: mage has 50% or less of their total health remaining</li>
+                     <ul>
+                        <li>Mage deals 40% more damage </li>
+                        <li>Ability heals 2 hearts per enemy hit</li>
+                     </ul>
+                     <br>
+
+                  <li>Blood Power 4: mage has 25% or less of their total health remaining</li>
+                     <ul>
+                        <li>Mage deals 80% more damage </li> 
+                        <li>Ability heals 3 hearts per enemy hit</li>
+                     </ul>
+            </ul>
+
+            <h4>Fire</h4>
+               <p>
+                  The fire mage's ability is a large fireball that does high damage in a large radius when it detonates.
+                  Their ability has a long cooldown, but this cooldown is reduced each time the mage hits enemies with
+                  their short cone basic attack. This cooldown reduction is increased for each enemy hit by the basic attack.
+
+               </p>
+            
+      
+      </div>
+      
+      <h3 id="enemies">Enemy Types (in order of threat level)</h3>
+      <div class="enemyTypes">
+        <ol>
+            <li>Chasers</li>
+            <img src="images/chaserPic.png" alt="Picture of chaser enemy in Honors Arcana">
+               <ul>
+                     <li>The most basic enemy type</li>
+                        <ul>
+                           <li>Makes up about 80% of enemies in early rooms and about 55% in later rooms</li>
+                        </ul>
+                     <li>Chase the player at a moderate speed</li>
+                     <li>Deal solid damage and have a decent number of hit points</li>
+                     <li>Adds pressure for the player to keep moving</li>
+               </ul>
+            <li>Skitters</li>
+            <img src="images/skitterPic.png" alt="Picture of skitter enemy in Honors Arcana">
+               <ul>
+                  <li>Mechanically similar to chasers but with different stats and spawn rates</li>
+                     <ul> 
+                        <li>Makes up about 18% of enemies in early rooms and about 25% in later rooms</li>
+                     </ul>
+                  <li>Quite a bit faster than chasers</li>
+                        <ul>
+                           <li>However, they have almost half as many hit points</li>
+                           <li>They also deal slightly less damage</li>
+                        </ul>
+
+               </ul>
+            <li>Shooters</li>
+            <img src="images/shooterPic.png" alt="Picture of shooter enemy in Honors Arcana">
+               <ul>
+                  <li>
+                     As their name implies, rather than following the player like chasers and skitters, shooters keep 
+                     distance and use ranged attacks
+                  </li>
+                        <ul>
+                           <li>
+                              This provides an element of zone control, requiring the player to be mindful of their movements 
+                              and use terrain to provide cover
+                           </li>
+                        </ul>
+                  <li>Their base HP and damage are between those of chasers and skitters, but their speed is notably less</li>
+                        <ul>
+                           <li>
+                              This makes it easier for the player to close distance if necessary (such as for the fire mage's 
+                              basic attack) despite the shooters' efforts to keep away 
+                           </li>
+                        </ul>
+                  <li>Despite their relatively low speed, shooters tend to be the most difficult of the basic enemy types</li>
+                        <ul>
+                           <li>
+                              Accordingly, in early rooms they're only about 2% of the enemies and never become more than 20%
+                              even in the late game
+                           </li>
+
+                        </ul>
+               </ul>
+            <li>Summoners</li>
+            <img src="images/summonerPic.png" alt="Picture of summoner enemy in Honors Arcana">
+               <ul> 
+                  <li>Summoners are unique in a few ways</li>
+                     <ul>
+                        <li>
+                           rather than having a specific spawn rate throughout the game, summoners don't appear till room 13, after which 
+                           there is guaranteed to be 1 summoner per room
+                        </li>
+                     </ul>
+
+               </ul>
+        </ol>
+      </div>
+        
+      <br> <br> <br>
+      <h2>The following is here for the class assignment and doesn't have anything to do with my game</h2>
+      <h3 id="youtube">YouTube Embed</h3> 
+
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/dbCOStXbYo8?si=0m97CfJZcoL6vIF-" 
+      title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+      <h3 id="tableau">Tableau Embed</h3>
+
+      <div class='tableauPlaceholder' id='viz1766028203040' style='position: relative'><noscript><a href='#'><img alt='Ratios of Inequity ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ra&#47;RatiosofInequity&#47;RatiosofInequity&#47;1_rss.png' style='border: none' />
+      </a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='RatiosofInequity&#47;RatiosofInequity' />
+      <param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ra&#47;RatiosofInequity&#47;RatiosofInequity&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' />
+      <param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='_gl=1*289hv*_ga*NDM0NjE1NDc1LjE3NjIyOTI0Nzc.*_ga_8YLN0SNXVS*czE3NjYwMjYzNDYkbzgkZzEkdDE3NjYwMjgxNjckajU4JGwwJGgw*_gcl_aw*R0NMLjE3NjI1NDM0MzEuQ2p3S0NBaUF6cmJJQmhBM0Vpd0FVQmFVZFlWaXZDeEhyQ1pCV0xpV2dYOFRwbjMxWWc5QXZqaVNRdkhxRDVUSk9QSlhHOEhFY3NrZDh4b0NLUm9RQXZEX0J3RQ..*_gcl_dc*R0NMLjE3NjI1NDM0MzEuQ2p3S0NBaUF6cmJJQmhBM0Vpd0FVQmFVZFlWaXZDeEhyQ1pCV0xpV2dYOFRwbjMxWWc5QXZqaVNRdkhxRDVUSk9QSlhHOEhFY3NrZDh4b0NLUm9RQXZEX0J3RQ..*_gcl_au*MTUzMjI0OTQzNi4xNzYyMjkyNDc3LjQwOTgyMDkzLjE3NjYwMjYzOTcuMTc2NjAyNjQwMQ..' />
+      </object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1766028203040');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='900px';vizElement.style.height='877px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    
+      vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+
+   </div>
+
+
+
+
+    
+</body>
+</html>

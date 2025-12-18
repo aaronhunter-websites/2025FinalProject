@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Doom-ish: Tiny Raycast FPS (Single File)</title>
+  <style>
+    :root{
+      --bg:#050607;
+      --panel:#0e1114;
+      --text:#e7e7e7;
+      --muted:#a8b0b7;
+      --accent:#ff3b3b;
+      --accent2:#ffd24a;
+      --ok:#62ffa5;
+      --border:#2a3138;
+      --shadow: rgba(0,0,0,.45);
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:radial-gradient(1200px 800px at 50% 30%, #111722 0%, var(--bg) 55%, #020304 100%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow:hidden;
+    }
+    .wrap{
+      height:100%;
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap:14px;
+      padding:14px;
+      box-sizing:border-box;
+    }
+    @media (max-width: 980px){
+      body{overflow:auto}
+      .wrap{
+        height:auto;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow: 0 16px 40px var(--shadow);
+      overflow:hidden;
+    }
+    .panelHeader{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(90deg, rgba(255,59,59,.14), rgba(255,210,74,.08), rgba(98,255,165,.08));
+    }
+    .panelHeader h1{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.6px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge{
+      font-size:11px;
+      padding:2px 8px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      color:var(--muted);
+      background:rgba(0,0,0,.25);
+    }
+
+    .panelBody{
+      padding:14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .hint{
+      background:rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:10px 12px;
+      color:var(--muted);
+      line-height:1.35;
+      font-size:13px;
+    }
+    .hint strong{color:var(--text)}
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    button, select, input[type="range"]{
+      font:inherit;
+    }
+    button{
+      cursor:pointer;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.22));
+      color:var(--text);
+      padding:10px 12px;
+      transition:transform .05s ease, border-color .2s ease, background .2s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+    }
+    button:hover{border-color:rgba(255,255,255,.32)}
+    button:active{transform: translateY(1px)}
+    button.primary{
+      border-color: rgba(255,59,59,.55);
+      box-shadow: 0 10px 22px rgba(255,59,59,.12), 0 12px 30px rgba(0,0,0,.35);
+    }
+    .small{
+      padding:8px 10px;
+      font-size:12.5px;
+      color:var(--muted);
+    }
+
+    .statGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .stat{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:12px;
+      padding:10px 12px;
+    }
+    .stat .k{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      color:var(--muted);
+    }
+    .stat .v{
+      font-size:18px;
+      margin-top:4px;
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+    }
+    .v .unit{font-size:12px;color:var(--muted)}
+    .accent{color:var(--accent)}
+    .accent2{color:var(--accent2)}
+    .ok{color:var(--ok)}
+
+    .sliderWrap{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:12px;
+      padding:10px 12px;
+    }
+    .sliderWrap label{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.6px;
+    }
+    input[type="range"]{width:100%}
+
+    .canvasPanel{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      min-height:540px;
+    }
+    .gameHeader{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    }
+    .gameHeader .title{
+      font-size:12px;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .pill{
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:11px;
+      color:var(--muted);
+      background:rgba(0,0,0,.25);
+    }
+    canvas{
+      width:100%;
+      height:100%;
+      display:block;
+      background:#000;
+    }
+    .hud{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      pointer-events:none;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-end;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.55));
+    }
+    .hudBox{
+      pointer-events:none;
+      background:linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.35));
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:14px;
+      padding:10px 12px;
+      min-width: 170px;
+    }
+    .hudRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      color:var(--muted);
+      margin:2px 0;
+    }
+    .bar{
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      overflow:hidden;
+      margin-top:6px;
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .bar > div{
+      height:100%;
+      width:50%;
+      background:linear-gradient(90deg, var(--accent), #ff7b4a);
+    }
+    .centerMsg{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:16px;
+      pointer-events:none;
+    }
+    .centerCard{
+      max-width:620px;
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:18px;
+      padding:16px 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+    .centerCard h2{
+      margin:0 0 6px 0;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      font-size:14px;
+    }
+    .centerCard p{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      line-height:1.35;
+      font-size:13px;
+    }
+    .kbd{
+      display:inline-block;
+      padding:2px 6px;
+      border:1px solid rgba(255,255,255,.18);
+      border-bottom-color: rgba(255,255,255,.08);
+      border-radius:8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      margin:0 2px;
+      white-space:nowrap;
+    }
+    .scanlines{
+      pointer-events:none;
+      position:absolute;
+      inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.03),
+        rgba(255,255,255,.03) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      mix-blend-mode: overlay;
+      opacity:.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="panel">
+      <div class="panelHeader">
+        <h1>DOOM-ish Mini FPS <span class="badge">single-file • raycast</span></h1>
+      </div>
+      <div class="panelBody">
+        <div class="hint">
+          <strong>Objective:</strong> Find the <span class="accent2">Key</span>, then reach the <span class="ok">Exit</span> to clear the level.
+          Or just keep blasting for a high score. If your <span class="accent">HP</span> hits 0, you lose.
+        </div>
+
+        <div class="hint">
+          <strong>Controls:</strong><br/>
+          Move: <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span>
+          • Turn: <span class="kbd">←</span><span class="kbd">→</span> or mouse (click canvas to lock)
+          • Shoot: <span class="kbd">Space</span> or left-click<br/>
+          Sprint: <span class="kbd">Shift</span>
+          • Pause: <span class="kbd">P</span>
+          • Restart: <span class="kbd">R</span>
+        </div>
+
+        <div class="statGrid">
+          <div class="stat"><div class="k">Status</div><div class="v" id="uiStatus">Ready <span class="unit">—</span></div></div>
+          <div class="stat"><div class="k">Best Score</div><div class="v"><span id="uiBest">0</span> <span class="unit">pts</span></div></div>
+          <div class="stat"><div class="k">Level</div><div class="v"><span id="uiLevel">1</span> <span class="unit">sector</span></div></div>
+          <div class="stat"><div class="k">Difficulty</div><div class="v"><span id="uiDiffLabel">Normal</span></div></div>
+        </div>
+
+        <div class="sliderWrap">
+          <label>
+            <span>Difficulty</span>
+            <span id="uiDiffNum" class="accent2">2</span>
+          </label>
+          <input id="diff" type="range" min="1" max="4" step="1" value="2" />
+          <div class="row" style="margin-top:8px;">
+            <button class="primary" id="btnStart">Start / Resume</button>
+            <button id="btnRestart">Restart</button>
+            <button class="small" id="btnToggleHelp">Toggle Tips</button>
+          </div>
+        </div>
+
+        <div class="hint" id="tipsBox">
+          <strong>Gameplay notes:</strong> Enemies track you if they see you in a corridor. Keep moving, grab <span class="ok">Medkits</span>,
+          watch your ammo, and don’t get cornered. This is a “Doom-like homage,” not the original game.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel canvasPanel">
+      <div class="gameHeader">
+        <div class="title">
+          <span class="pill">click canvas to capture mouse</span>
+          <span class="pill">single page</span>
+          <span class="pill">no libraries</span>
+        </div>
+        <div class="title">
+          <span class="pill">HP <span class="accent" id="uiHPTop">100</span></span>
+          <span class="pill">Ammo <span class="accent2" id="uiAmmoTop">30</span></span>
+          <span class="pill">Score <span class="ok" id="uiScoreTop">0</span></span>
+        </div>
+      </div>
+
+      <div style="position:relative; flex:1; min-height:520px;">
+        <canvas id="c" width="960" height="540"></canvas>
+        <div class="scanlines"></div>
+
+        <div class="hud">
+          <div class="hudBox">
+            <div class="hudRow"><span>HP</span><span id="uiHP">100</span></div>
+            <div class="bar"><div id="hpBar"></div></div>
+          </div>
+          <div class="hudBox">
+            <div class="hudRow"><span>AMMO</span><span id="uiAmmo">30</span></div>
+            <div class="hudRow"><span>KEY</span><span id="uiKey">NO</span></div>
+            <div class="hudRow"><span>SCORE</span><span id="uiScore">0</span></div>
+          </div>
+          <div class="hudBox">
+            <div class="hudRow"><span>LEVEL</span><span id="uiLevelHud">1</span></div>
+            <div class="hudRow"><span>TIP</span><span id="uiTip">Find the key.</span></div>
+          </div>
+        </div>
+
+        <div class="centerMsg" id="centerMsg">
+          <div class="centerCard">
+            <h2>BOOTING: “RUN DOOM ON A CLASS WEBSITE” EDITION</h2>
+            <p>
+              Click <strong>Start</strong> (or press <span class="kbd">Enter</span>) then click the canvas to capture the mouse.
+              Move with <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span>, shoot with <span class="kbd">Space</span>.
+            </p>
+            <p style="margin-top:10px; color: #cbd5dd;">
+              Disclaimer: This is an original mini “Doom-like” raycaster, not the copyrighted 1993 Doom.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ======== Tiny Doom-ish Raycaster (Original) ========
+    // All code in one file. No external assets. Canvas-based.
+    // This is an homage to classic raycast FPS games, NOT a recreation of Doom.
+
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d', { alpha: false });
+
+    // UI
+    const ui = {
+      status: document.getElementById('uiStatus'),
+      best: document.getElementById('uiBest'),
+      level: document.getElementById('uiLevel'),
+      levelHud: document.getElementById('uiLevelHud'),
+      hp: document.getElementById('uiHP'),
+      hpTop: document.getElementById('uiHPTop'),
+      hpBar: document.getElementById('hpBar'),
+      ammo: document.getElementById('uiAmmo'),
+      ammoTop: document.getElementById('uiAmmoTop'),
+      score: document.getElementById('uiScore'),
+      scoreTop: document.getElementById('uiScoreTop'),
+      key: document.getElementById('uiKey'),
+      tip: document.getElementById('uiTip'),
+      centerMsg: document.getElementById('centerMsg'),
+      diff: document.getElementById('diff'),
+      diffNum: document.getElementById('uiDiffNum'),
+      diffLabel: document.getElementById('uiDiffLabel'),
+      tipsBox: document.getElementById('tipsBox'),
+    };
+
+    const btnStart = document.getElementById('btnStart');
+    const btnRestart = document.getElementById('btnRestart');
+    const btnToggleHelp = document.getElementById('btnToggleHelp');
+
+    // Game constants
+    const TAU = Math.PI * 2;
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    // Difficulty presets (1..4)
+    const DIFF = {
+      1: { name: "Easy",   enemySpeed: 0.75, enemyDmg: 6,  spawn: 5,  ammo: 40, med: 5 },
+      2: { name: "Normal", enemySpeed: 1.00, enemyDmg: 9,  spawn: 7,  ammo: 30, med: 4 },
+      3: { name: "Hard",   enemySpeed: 1.20, enemyDmg: 12, spawn: 9,  ammo: 26, med: 3 },
+      4: { name: "Nightmare", enemySpeed: 1.45, enemyDmg: 15, spawn: 12, ammo: 22, med: 2 },
+    };
+
+    // Input
+    const keys = new Set();
+    let mouseCaptured = false;
+    let mouseDX = 0;
+
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === ' ') e.preventDefault();
+      keys.add(e.key.toLowerCase());
+      if (e.key === 'Enter') startOrResume();
+      if (e.key.toLowerCase() === 'p') togglePause();
+      if (e.key.toLowerCase() === 'r') restart();
+    });
+    window.addEventListener('keyup', (e)=> keys.delete(e.key.toLowerCase()));
+
+    canvas.addEventListener('click', ()=>{
+      if (!running) return;
+      if (!mouseCaptured) {
+        canvas.requestPointerLock?.();
+      } else {
+        shoot();
+      }
+    });
+
+    document.addEventListener('pointerlockchange', ()=>{
+      mouseCaptured = (document.pointerLockElement === canvas);
+    });
+
+    document.addEventListener('mousemove', (e)=>{
+      if (!mouseCaptured) return;
+      mouseDX += e.movementX || 0;
+    });
+
+    // Buttons
+    btnStart.addEventListener('click', startOrResume);
+    btnRestart.addEventListener('click', restart);
+    btnToggleHelp.addEventListener('click', ()=>{
+      ui.tipsBox.style.display = (ui.tipsBox.style.display === 'none') ? '' : 'none';
+    });
+
+    // Storage
+    const STORAGE_KEY = "doomish_bestscore_v1";
+    let bestScore = Number(localStorage.getItem(STORAGE_KEY) || 0);
+
+    // World generation (grid-based)
+    // 0 empty, 1 wall, 2 exit door, 3 key pickup, 4 medkit, 5 ammo
+    const W = 21, H = 21; // odd sizes help maze carving
+    let map = [];
+    let level = 1;
+
+    // Entities
+    let player, enemies = [];
+    let running = false;
+    let paused = false;
+    let gameOver = false;
+    let won = false;
+
+    // Rendering settings
+    let fov = Math.PI / 3; // 60°
+    let rays = 280;
+    let maxDist = 20;
+    let turnSpeed = 2.2; // rad/sec baseline
+    let moveSpeed = 3.2; // units/sec baseline
+
+    // Effects
+    let flash = 0;        // muzzle flash
+    let hurtVignette = 0; // damage vignette
+    let messageTimer = 0;
+    let centerText = "";
+
+    function setStatus(text, unit="") {
+      ui.status.textContent = text + (unit ? " " + unit : "");
+    }
+
+    function setDifficultyUI() {
+      const d = Number(ui.diff.value);
+      ui.diffNum.textContent = d;
+      ui.diffLabel.textContent = DIFF[d].name;
+    }
+    ui.diff.addEventListener('input', setDifficultyUI);
+    setDifficultyUI();
+
+    function makeEmptyMap() {
+      map = Array.from({length:H}, ()=>Array.from({length:W}, ()=>1));
+    }
+
+    // Maze carving (recursive backtracker)
+    function carveMaze() {
+      makeEmptyMap();
+      const dirs = [[0,-2],[2,0],[0,2],[-2,0]];
+
+      function shuffle(a){
+        for(let i=a.length-1;i>0;i--){
+          const j=(Math.random()*(i+1))|0;
+          [a[i],a[j]]=[a[j],a[i]];
+        }
+        return a;
+      }
+      function inside(x,y){return x>0 && y>0 && x<W-1 && y<H-1}
+
+      const stack = [];
+      let sx = 1, sy = 1;
+      map[sy][sx] = 0;
+      stack.push([sx,sy]);
+
+      while(stack.length){
+        const [cx,cy] = stack[stack.length-1];
+        const candidates = [];
+        for(const [dx,dy] of dirs){
+          const nx=cx+dx, ny=cy+dy;
+          if(inside(nx,ny) && map[ny][nx]===1){
+            candidates.push([dx,dy,nx,ny]);
+          }
+        }
+        if(!candidates.length){
+          stack.pop();
+        } else {
+          const [dx,dy,nx,ny] = shuffle(candidates)[0];
+          map[cy+dy/2][cx+dx/2] = 0;
+          map[ny][nx] = 0;
+          stack.push([nx,ny]);
+        }
+      }
+
+      // Add a few rooms/pockets
+      const rooms = 4 + (level|0);
+      for(let i=0;i<rooms;i++){
+        const rx = 2 + ((Math.random()*(W-4))|0);
+        const ry = 2 + ((Math.random()*(H-4))|0);
+        const rw = 2 + ((Math.random()*4)|0);
+        const rh = 2 + ((Math.random()*4)|0);
+        for(let y=ry;y<ry+rh && y<H-1;y++){
+          for(let x=rx;x<rx+rw && x<W-1;x++){
+            map[y][x]=0;
+          }
+        }
+      }
+    }
+
+    function randomEmptyCell(avoidNear = null) {
+      for(let tries=0; tries<3000; tries++){
+        const x = 1 + ((Math.random()*(W-2))|0);
+        const y = 1 + ((Math.random()*(H-2))|0);
+        if(map[y][x]!==0) continue;
+        if(avoidNear){
+          const dx = x+0.5 - avoidNear.x;
+          const dy = y+0.5 - avoidNear.y;
+          if(dx*dx+dy*dy < 16) continue;
+        }
+        return {x:x+0.5, y:y+0.5};
+      }
+      return {x:1.5,y:1.5};
+    }
+
+    // ---- FIX #2: spawn in a more open area, not a 1-tile corridor ----
+    function findOpenSpawn() {
+      for (let tries = 0; tries < 5000; tries++) {
+        const x = 1 + ((Math.random() * (W - 2)) | 0);
+        const y = 1 + ((Math.random() * (H - 2)) | 0);
+        if (map[y][x] !== 0) continue;
+
+        let open = 0;
+        if (map[y-1][x] === 0) open++;
+        if (map[y+1][x] === 0) open++;
+        if (map[y][x-1] === 0) open++;
+        if (map[y][x+1] === 0) open++;
+
+        if (open >= 3) return { x: x + 0.5, y: y + 0.5 };
+      }
+      return { x: 1.5, y: 1.5 };
+    }
+
+    function placeSpecials() {
+      const exitPos = randomEmptyCell({x:player.x,y:player.y});
+      map[(exitPos.y|0)][(exitPos.x|0)] = 2;
+
+      const keyPos = randomEmptyCell({x:player.x,y:player.y});
+      map[(keyPos.y|0)][(keyPos.x|0)] = 3;
+
+      const d = DIFF[Number(ui.diff.value)];
+      for(let i=0;i<d.med + Math.floor(level/2); i++){
+        const p = randomEmptyCell({x:player.x,y:player.y});
+        map[(p.y|0)][(p.x|0)] = 4;
+      }
+      for(let i=0;i<4 + Math.floor(level/2); i++){
+        const p = randomEmptyCell({x:player.x,y:player.y});
+        map[(p.y|0)][(p.x|0)] = 5;
+      }
+    }
+
+    function spawnEnemies() {
+      enemies = [];
+      const d = DIFF[Number(ui.diff.value)];
+      const count = d.spawn + Math.floor(level * 1.2);
+      for(let i=0;i<count;i++){
+        const p = randomEmptyCell({x:player.x,y:player.y});
+        enemies.push({
+          x:p.x, y:p.y,
+          r:0.28,
+          hp: 20 + level*3,
+          alive:true,
+          t: Math.random()*1000,
+          seen:false,
+          cooldown: 0
+        });
+      }
+    }
+
+    function initPlayer() {
+      const sp = findOpenSpawn();
+      player = {
+        x:sp.x, y:sp.y,
+        a:0,
+        hp:100,
+        ammo: DIFF[Number(ui.diff.value)].ammo,
+        score:0,
+        hasKey:false,
+        fireCooldown:0,
+      };
+    }
+
+    function newLevel(resetScore=false) {
+      if (resetScore) bestScore = Number(localStorage.getItem(STORAGE_KEY) || bestScore);
+      ui.centerMsg.style.display = 'none';
+      gameOver = false;
+      won = false;
+      paused = false;
+      running = true;
+
+      carveMaze();
+      initPlayer();        // now spawns using findOpenSpawn()
+
+      placeSpecials();
+      spawnEnemies();
+
+      if (resetScore) player.score = 0;
+      updateUI();
+      setStatus("In Progress", "—");
+      centerText = "";
+    }
+
+    function startOrResume(){
+      if (!running) {
+        level = 1;
+        newLevel(true);
+      } else if (gameOver || won) {
+        restart();
+      } else {
+        paused = false;
+        ui.centerMsg.style.display = 'none';
+        setStatus("In Progress", "—");
+      }
+    }
+
+    function restart(){
+      level = 1;
+      bestScore = Number(localStorage.getItem(STORAGE_KEY) || bestScore);
+      newLevel(true);
+    }
+
+    function togglePause(){
+      if (!running || gameOver || won) return;
+      paused = !paused;
+      ui.centerMsg.style.display = paused ? '' : 'none';
+      centerText = paused ? "PAUSED" : "";
+      setStatus(paused ? "Paused" : "In Progress", "—");
+    }
+
+    // ---- safety guard: prevents boot-time map crashes ----
+    function cellAt(x,y){
+      const cx = x|0, cy = y|0;
+      if (!map || map.length !== H) return 1;
+      if(cy<0||cy>=H||cx<0||cx>=W) return 1;
+      return map[cy][cx];
+    }
+
+    function isWall(v){ return v===1; }
+
+    function tryMove(nx, ny){
+      const r = 0.22;
+      const corners = [
+        [nx-r, ny-r],[nx+r, ny-r],[nx-r, ny+r],[nx+r, ny+r]
+      ];
+      for(const [cx,cy] of corners){
+        if(isWall(cellAt(cx,cy))) return false;
+      }
+      player.x = nx; player.y = ny;
+      return true;
+    }
+
+    function pickupAtCell(cx, cy){
+      const v = map[cy][cx];
+      if (v===3){
+        player.hasKey = true;
+        map[cy][cx]=0;
+        showMessage("KEY ACQUIRED");
+        ui.tip.textContent = "Now reach the exit.";
+      } else if (v===4){
+        const before = player.hp;
+        player.hp = clamp(player.hp + 35, 0, 100);
+        map[cy][cx]=0;
+        if(player.hp>before) showMessage("MEDKIT +HP");
+      } else if (v===5){
+        player.ammo += 12;
+        map[cy][cx]=0;
+        showMessage("AMMO +12");
+      } else if (v===2){
+        if(player.hasKey){
+          winLevel();
+        } else {
+          ui.tip.textContent = "Exit locked. Find the key.";
+          showMessage("EXIT LOCKED");
+        }
+      }
+    }
+
+    function winLevel(){
+      won = true;
+      paused = false;
+
+      player.score += 200 + level*30;
+      bestScore = Math.max(bestScore, player.score);
+      localStorage.setItem(STORAGE_KEY, String(bestScore));
+
+      centerText = `LEVEL ${level} CLEARED`;
+      ui.centerMsg.style.display = '';
+      setStatus("Level Complete", "✓");
+
+      setTimeout(()=>{
+        if(!won) return;
+        level++;
+        newLevel(false);
+        player.hp = clamp(player.hp, 35, 100);
+        player.ammo += 8 + Math.floor(level/2);
+        ui.tip.textContent = "Find the key.";
+        won = false;
+        ui.centerMsg.style.display = 'none';
+      }, 1200);
+    }
+
+    function showMessage(text){
+      centerText = text;
+      messageTimer = 0.9;
+    }
+
+    function takeDamage(amount){
+      player.hp = clamp(player.hp - amount, 0, 100);
+      hurtVignette = 1.0;
+      if(player.hp<=0) loseGame();
+    }
+
+    function loseGame(){
+      gameOver = true;
+      paused = false;
+
+      bestScore = Math.max(bestScore, player.score);
+      localStorage.setItem(STORAGE_KEY, String(bestScore));
+
+      ui.centerMsg.style.display = '';
+      centerText = "YOU DIED";
+      setStatus("Game Over", "✕");
+    }
+
+    // Ray casting
+    function castRay(ox, oy, ang, maxD){
+      const sin = Math.sin(ang), cos = Math.cos(ang);
+      let dist = 0;
+      let hit = 0;
+      let hx = ox, hy = oy;
+      let side = 0;
+
+      const step = 0.03;
+      while(dist < maxD){
+        hx = ox + cos*dist;
+        hy = oy + sin*dist;
+        const v = cellAt(hx, hy);
+        if (v === 1){
+          hit = 1;
+          const fx = hx - Math.floor(hx);
+          const fy = hy - Math.floor(hy);
+          side = (fx<0.02 || fx>0.98) ? 1 : (fy<0.02 || fy>0.98 ? 2 : 0);
+          break;
+        }
+        dist += step;
+      }
+      return { dist, hit, x:hx, y:hy, side };
+    }
+
+    function hasLOS(ax,ay,bx,by){
+      const ang = Math.atan2(by-ay, bx-ax);
+      const d = Math.hypot(bx-ax, by-ay);
+      const r = castRay(ax,ay,ang,d);
+      return !r.hit;
+    }
+
+    function shoot(){
+      if (paused || gameOver || won) return;
+      if(player.fireCooldown>0) return;
+      if(player.ammo<=0){
+        showMessage("NO AMMO");
+        player.fireCooldown = 0.25;
+        return;
+      }
+      player.ammo--;
+      player.fireCooldown = 0.18;
+      flash = 0.18;
+
+      const cone = 0.10;
+      let best = null;
+      for(const e of enemies){
+        if(!e.alive) continue;
+        const dx = e.x - player.x;
+        const dy = e.y - player.y;
+        const d = Math.hypot(dx,dy);
+        if(d>9.5) continue;
+        const ang = Math.atan2(dy,dx);
+        let da = ((ang - player.a + Math.PI*3) % TAU) - Math.PI;
+        if(Math.abs(da) > cone) continue;
+        if(!hasLOS(player.x,player.y,e.x,e.y)) continue;
+        if(!best || d < best.d) best = {e, d};
+      }
+      if(best){
+        const dmg = 12 + (Math.random()*10)|0;
+        best.e.hp -= dmg;
+        showMessage("HIT!");
+        if(best.e.hp<=0){
+          best.e.alive = false;
+          player.score += 50 + Math.floor(level*4);
+          showMessage("KILL +SCORE");
+        } else {
+          player.score += 5;
+        }
+      } else {
+        player.score = Math.max(0, player.score - 1);
+      }
+      bestScore = Math.max(bestScore, player.score);
+      localStorage.setItem(STORAGE_KEY, String(bestScore));
+      updateUI();
+    }
+
+    function draw(){
+      const w = canvas.width, h = canvas.height;
+
+      // sky + floor
+      ctx.fillStyle = "#0b1018";
+      ctx.fillRect(0,0,w,h/2);
+      ctx.fillStyle = "#050607";
+      ctx.fillRect(0,h/2,w,h/2);
+
+      // horizon glow
+      const grd = ctx.createLinearGradient(0,h/2-60,0,h/2+80);
+      grd.addColorStop(0, "rgba(255,210,74,0.06)");
+      grd.addColorStop(0.5, "rgba(255,59,59,0.03)");
+      grd.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0,h/2-60,w,140);
+
+      const halfFov = fov/2;
+      const colW = w / rays;
+      const zBuffer = new Float32Array(rays);
+
+      for(let i=0;i<rays;i++){
+        const t = i/(rays-1);
+        const ang = player.a - halfFov + fov*t;
+        const ray = castRay(player.x, player.y, ang, maxDist);
+
+        const ca = Math.cos(ang - player.a);
+        const d = ray.dist * ca;
+        zBuffer[i] = d;
+
+        // ---- FIX #1: cap wall height so close walls don't fill the whole screen ----
+        const wallH = clamp((h / (d+0.0001)) * 0.55, 0, h*0.92);
+        const y0 = (h/2) - wallH/2;
+
+        const shade = clamp(1 - d/maxDist, 0, 1);
+        const sideTint = (ray.side===1) ? 0.85 : (ray.side===2 ? 0.75 : 1.0);
+        const rr = Math.floor(40 + 140*shade*sideTint);
+        const gg = Math.floor(20 + 70*shade*sideTint);
+        const bb = Math.floor(20 + 55*shade*sideTint);
+
+        ctx.fillStyle = `rgb(${rr},${gg},${bb})`;
+        ctx.fillRect(i*colW, y0, colW+1, wallH);
+
+        if(i%7===0){
+          ctx.fillStyle = `rgba(0,0,0,${0.12 + (1-shade)*0.25})`;
+          ctx.fillRect(i*colW, y0, 1, wallH);
+        }
+      }
+
+      // sprites (exit/key/med/ammo + enemies)
+      const sprites = [];
+
+      for(let y=0;y<H;y++){
+        for(let x=0;x<W;x++){
+          const v = map[y][x];
+          if(v===0 || v===1) continue;
+          const sx = x+0.5, sy = y+0.5;
+          const dx = sx - player.x, dy = sy - player.y;
+          const dist = Math.hypot(dx,dy);
+          if(dist>maxDist) continue;
+          sprites.push({ kind:v, x:sx, y:sy, dist });
+        }
+      }
+
+      for(const e of enemies){
+        if(!e.alive) continue;
+        const dx = e.x - player.x, dy = e.y - player.y;
+        const dist = Math.hypot(dx,dy);
+        if(dist>maxDist) continue;
+        sprites.push({ kind:"enemy", x:e.x, y:e.y, dist, ref:e });
+      }
+
+      sprites.sort((a,b)=>b.dist-a.dist);
+
+      for(const s of sprites){
+        const ang = Math.atan2(s.y - player.y, s.x - player.x);
+        let da = ((ang - player.a + Math.PI*3) % TAU) - Math.PI;
+        if(Math.abs(da) > fov/2 + 0.2) continue;
+
+        const screenX = ( (da + fov/2) / fov ) * w;
+        const col = Math.floor((screenX / w) * (rays-1));
+        const depth = zBuffer[clamp(col,0,rays-1)];
+        if(s.dist > depth + 0.25) continue;
+
+        const size = clamp((h / (s.dist+0.0001)) * 0.55, 2, h*0.9);
+        const x0 = screenX - size/2;
+        const y0 = (h/2) - size/2;
+
+        if(s.kind === "enemy"){
+          const pulse = 0.7 + 0.3*Math.sin((s.ref.t||0)*8);
+          ctx.fillStyle = `rgba(255,60,60,${0.65*pulse})`;
+          ctx.beginPath();
+          ctx.ellipse(screenX, y0+size*0.55, size*0.30, size*0.35, 0, 0, TAU);
+          ctx.fill();
+
+          ctx.fillStyle = `rgba(255,210,74,${0.8*pulse})`;
+          ctx.fillRect(screenX - size*0.12, y0+size*0.42, size*0.06, size*0.05);
+          ctx.fillRect(screenX + size*0.06, y0+size*0.42, size*0.06, size*0.05);
+
+          ctx.fillStyle = "rgba(0,0,0,.35)";
+          ctx.fillRect(x0, y0+size*0.08, size, 4);
+          ctx.fillStyle = "rgba(255,210,74,.9)";
+          const hpT = clamp(s.ref.hp / (20+level*3), 0, 1);
+          ctx.fillRect(x0, y0+size*0.08, size*hpT, 4);
+
+        } else if (s.kind === 2){
+          ctx.fillStyle = "rgba(98,255,165,.22)";
+          ctx.fillRect(x0, y0, size, size);
+          ctx.fillStyle = "rgba(98,255,165,.70)";
+          ctx.fillRect(screenX-size*0.18, y0+size*0.15, size*0.36, size*0.7);
+
+        } else if (s.kind === 3){
+          ctx.fillStyle = "rgba(255,210,74,.22)";
+          ctx.beginPath();
+          ctx.arc(screenX, y0+size*0.55, size*0.22, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = "rgba(255,210,74,.75)";
+          ctx.fillRect(screenX-size*0.06, y0+size*0.32, size*0.12, size*0.46);
+
+        } else if (s.kind === 4){
+          ctx.fillStyle = "rgba(98,255,165,.18)";
+          ctx.fillRect(x0, y0, size, size);
+          ctx.fillStyle = "rgba(98,255,165,.75)";
+          const t = size*0.18;
+          ctx.fillRect(screenX - t/2, y0+size*0.25, t, size*0.5);
+          ctx.fillRect(screenX - size*0.25, y0+size*0.5 - t/2, size*0.5, t);
+
+        } else if (s.kind === 5){
+          ctx.fillStyle = "rgba(255,210,74,.18)";
+          ctx.fillRect(x0, y0, size, size);
+          ctx.fillStyle = "rgba(255,210,74,.75)";
+          ctx.fillRect(screenX - size*0.18, y0+size*0.25, size*0.36, size*0.5);
+        }
+      }
+
+      // Crosshair
+      ctx.globalAlpha = 0.9;
+      ctx.strokeStyle = "rgba(255,255,255,.65)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(w/2-10, h/2); ctx.lineTo(w/2-3, h/2);
+      ctx.moveTo(w/2+3, h/2); ctx.lineTo(w/2+10, h/2);
+      ctx.moveTo(w/2, h/2-10); ctx.lineTo(w/2, h/2-3);
+      ctx.moveTo(w/2, h/2+3); ctx.lineTo(w/2, h/2+10);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Muzzle flash
+      if(flash>0){
+        const a = clamp(flash/0.18, 0, 1);
+        ctx.fillStyle = `rgba(255,210,74,${0.18*a})`;
+        ctx.beginPath();
+        ctx.arc(w/2, h/2, 120*a, 0, TAU);
+        ctx.fill();
+      }
+
+      // Hurt vignette
+      if(hurtVignette>0){
+        const a = clamp(hurtVignette, 0, 1);
+        const vg = ctx.createRadialGradient(w/2,h/2, 120, w/2,h/2, Math.max(w,h)*0.75);
+        vg.addColorStop(0, "rgba(0,0,0,0)");
+        vg.addColorStop(1, `rgba(255,59,59,${0.35*a})`);
+        ctx.fillStyle = vg;
+        ctx.fillRect(0,0,w,h);
+      }
+
+      // Center message
+      if(messageTimer>0 && !paused && !gameOver){
+        const a = clamp(messageTimer/0.9, 0, 1);
+        ctx.fillStyle = `rgba(0,0,0,${0.35*a})`;
+        ctx.fillRect(w/2-140, 22, 280, 34);
+        ctx.strokeStyle = `rgba(255,255,255,${0.18*a})`;
+        ctx.strokeRect(w/2-140, 22, 280, 34);
+        ctx.fillStyle = `rgba(255,210,74,${0.90*a})`;
+        ctx.font = "bold 14px ui-monospace, Menlo, Consolas, monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(centerText, w/2, 44);
+        ctx.textAlign = "left";
+      }
+
+      // overlay text updates
+      if (ui.centerMsg.style.display !== 'none') {
+        const card = ui.centerMsg.querySelector('.centerCard');
+        if (card){
+          const h2 = card.querySelector('h2');
+          const p = card.querySelector('p');
+          if (gameOver){
+            h2.textContent = "YOU DIED";
+            p.innerHTML = `Score: <strong>${player.score|0}</strong> • Best: <strong>${bestScore|0}</strong><br/>
+              Press <span class="kbd">R</span> to restart.`;
+          } else if (paused){
+            h2.textContent = "PAUSED";
+            p.innerHTML = `Press <span class="kbd">P</span> to resume.`;
+          } else if (won){
+            h2.textContent = centerText || "LEVEL CLEARED";
+            p.innerHTML = `Preparing next sector…`;
+          }
+        }
+      }
+    }
+
+    function updateUI(){
+      ui.best.textContent = bestScore|0;
+      ui.level.textContent = level|0;
+      ui.levelHud.textContent = level|0;
+
+      ui.hp.textContent = player.hp|0;
+      ui.hpTop.textContent = player.hp|0;
+      ui.hpBar.style.width = `${clamp(player.hp,0,100)}%`;
+
+      ui.ammo.textContent = player.ammo|0;
+      ui.ammoTop.textContent = player.ammo|0;
+
+      ui.score.textContent = player.score|0;
+      ui.scoreTop.textContent = player.score|0;
+
+      ui.key.textContent = player.hasKey ? "YES" : "NO";
+      if(!player.hasKey) ui.tip.textContent = "Find the key.";
+    }
+
+    let last = performance.now();
+
+    function step(now){
+      const dt = Math.min(0.033, (now-last)/1000);
+      last = now;
+
+      if (running && !paused && !gameOver && !won){
+        const d = DIFF[Number(ui.diff.value)];
+
+        // Turn
+        const mouseTurn = (mouseDX / 900) * (turnSpeed*2.8);
+        mouseDX = 0;
+
+        let turn = 0;
+        if(keys.has('arrowleft')) turn -= 1;
+        if(keys.has('arrowright')) turn += 1;
+        player.a = (player.a + (turn*turnSpeed + mouseTurn) * dt + TAU) % TAU;
+
+        // Move
+        const sprint = keys.has('shift') ? 1.5 : 1.0;
+        const sp = moveSpeed * sprint * dt;
+
+        let mx=0,my=0;
+        if(keys.has('w')) { mx += Math.cos(player.a)*sp; my += Math.sin(player.a)*sp; }
+        if(keys.has('s')) { mx -= Math.cos(player.a)*sp; my -= Math.sin(player.a)*sp; }
+        if(keys.has('a')) { mx += Math.cos(player.a-Math.PI/2)*sp; my += Math.sin(player.a-Math.PI/2)*sp; }
+        if(keys.has('d')) { mx += Math.cos(player.a+Math.PI/2)*sp; my += Math.sin(player.a+Math.PI/2)*sp; }
+
+        if(mx!==0 || my!==0){
+          tryMove(player.x + mx, player.y);
+          tryMove(player.x, player.y + my);
+        }
+
+        // Interact
+        const cx = player.x|0, cy = player.y|0;
+        if(map[cy] && map[cy][cx]!==0 && map[cy][cx]!==1){
+          pickupAtCell(cx,cy);
+        }
+
+        // Shooting
+        if(keys.has(' ')) shoot();
+        if(player.fireCooldown>0) player.fireCooldown -= dt;
+
+        // Enemy AI
+        for(const e of enemies){
+          if(!e.alive) continue;
+          e.t += dt;
+
+          const dx = player.x - e.x;
+          const dy = player.y - e.y;
+          const dist = Math.hypot(dx,dy);
+
+          const sees = dist < 9.5 && hasLOS(e.x,e.y, player.x, player.y);
+          if(sees) e.seen = true;
+          if(!e.seen) continue;
+
+          const speed = (0.9 + 0.22*Math.sin(e.t*3)) * d.enemySpeed * dt;
+          const ax = dx / (dist+1e-6);
+          const ay = dy / (dist+1e-6);
+
+          const nx = e.x + ax*speed;
+          const ny = e.y + ay*speed;
+
+          const r = e.r;
+          const corners = [
+            [nx-r, ny-r],[nx+r, ny-r],[nx-r, ny+r],[nx+r, ny+r]
+          ];
+          let ok = true;
+          for(const [cx,cy] of corners){
+            if(isWall(cellAt(cx,cy))){ ok=false; break; }
+          }
+          if(ok){ e.x = nx; e.y = ny; }
+
+          e.cooldown = Math.max(0, e.cooldown - dt);
+          if(dist < 0.85 && e.cooldown<=0){
+            e.cooldown = 0.75;
+            takeDamage(d.enemyDmg);
+            showMessage("OUCH!");
+          }
+        }
+
+        // Score tick
+        player.score += dt*1.2;
+        if(player.score>bestScore){
+          bestScore = Math.floor(player.score);
+          localStorage.setItem(STORAGE_KEY, String(bestScore));
+        }
+
+        // Effects decay
+        flash = Math.max(0, flash - dt);
+        hurtVignette = Math.max(0, hurtVignette - dt*1.7);
+        if(messageTimer>0) messageTimer = Math.max(0, messageTimer - dt);
+
+        updateUI();
+      }
+
+      if (!player) {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+      } else {
+        draw();
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function boot(){
+      bestScore = Number(localStorage.getItem(STORAGE_KEY) || 0);
+      ui.best.textContent = bestScore|0;
+      setStatus("Ready", "—");
+      ui.centerMsg.style.display = '';
+      // keep boot simple; game renders after Start
+    }
+
+    boot();
+    requestAnimationFrame(step);
+  </script>
+</body>
+</html>

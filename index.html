@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Aaron Hunter | Portfolio</title>
+  <link rel="stylesheet" href="Styles/prostyles.css"/>
+</head>
+
+<body>
+  <!-- Sticky navigation -->
+  <header class="topbar">
+    <div class="inner">
+      <div class="brand">Aaron Hunter</div>
+      <nav class="navlinks" aria-label="Primary">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="resume.html">Résumé</a>
+        <a href="theatre.html">Theatre</a>
+        <a href="honorsArcana.html" target="_blank">Honors Arcana</a>
+        <a href="https://www.linkedin.com/in/Aaron-B-Hunter" target="_blank" rel="noopener">LinkedIn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero card -->
+    <section class="card hero">
+      <div class="herogrid">
+        <div>
+          <h1>Hi — I’m Aaron.</h1>
+          <p class="pill">Earning a BS in Sociology with a minor in Information Systems</p>
+
+          <h2>Quick links</h2>
+          <div class="btnrow">
+            <a class="button" href="resume.html">View résumé</a>
+            <a class="button secondary" href="theatre.html">Theatre résumé</a>
+            <a class="button" href="aboutHA.html" target="_blank">About Honors Arcana</a>
+            <a class="button secondary" href="https://www.linkedin.com/in/Aaron-B-Hunter" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+
+          <h2>About</h2>
+          <p>
+            <!-- Keep this short and professional. Replace anytime. -->
+            I'm a student at BYU, graduating winter 2027
+          </p>
+
+          <h2>Strengths</h2>
+          <ul>
+            <li>Quant + qual research skills (methods, analysis, writing)</li>
+            <li>Dashboards and reporting (Tableau, SQL, Excel/VBA)</li>
+            <li>Clear communication and cross-team collaboration</li>
+          </ul>
+        </div>
+
+        <!-- Right column: simple “profile” card -->
+        <aside class="kv" aria-label="Contact and highlights">
+          <h2 style="margin-top:0">Highlights</h2>
+          <p><strong>Education:</strong> Brigham Young University (Sociology B.S., IS minor)</p>
+          <p><strong>GPA:</strong> 3.94 (current)</p>
+          <p><strong>Focus:</strong> Research methods • Data analysis • Persuasive writing</p>
+
+          <h3>Contact</h3>
+          <p>
+            hunteraaronhunter@gmail.com
+          </p>
+
+          <p>
+            <strong>LinkedIn:</strong>
+            <a href="https://www.linkedin.com/in/Aaron-B-Hunter" target="_blank" rel="noopener">
+              linkedin.com/in/Aaron-B-Hunter
+            </a>
+          </p>
+
+          <p class="pill">Note: this site is a first draft, I plan to improve it later!</p>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="footer">
+      © <span id="year"></span> Aaron Hunter • Built with HTML/CSS
+    </footer>
+  </main>
+
+  <script>
+    // Tiny helper: keeps the footer year current.
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
