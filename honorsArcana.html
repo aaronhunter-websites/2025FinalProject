@@ -597,23 +597,33 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
   let score = 0;
   let kills = 0;
 
-  // ===== Classes =====
+  // ===== CLASS BALANCES =====
   const CLASSES = {
     frost: {
       name:"Frost Mage",
       baseMaxHearts: 9,
       moveSpd: 166,
       basicCd: 0.28,
-      abilityCd: 4.4,
-      boltDmg: 5,
-      boltBonusVsFrozen: 11,
+      abilityCd: 4.3,
+      boltDmg: 4,
+      boltBonusVsFrozen: 13,
 
-      freezeDuration: 1.65,
+        // Freeze cone stuff
+      freezeDuration: 1.67,
       freezeConeRange: 96,
       freezeConeWidthDeg: 130,
       freezeConeDmg: 6,
       freezeBonusPerExtraHit: 0.20, // +0.20s for each enemy after the first
       freezeBonusCap: 2.00 ,         // max bonus seconds added
+
+            // Frost shard splash (AOE when you hit a frozen enemy with a frost bolt)
+      shardRadius: 35,          // world units (px). try 50–70
+      shardDamage: 4,           // flat damage
+      shardMaxTargets: 8,       // cap so it doesn’t scale infinitely
+      shardIgnoresLOS: true,    // usually feels better as true
+      shardFreezeOnly: false,   // if true, only damages frozen enemies
+      shardFx: true,
+
 
     },
     blood: {
@@ -632,13 +642,13 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       name:"Fire Mage",
       baseMaxHearts: 9,
       moveSpd: 168,
-      basicCd: 0.30,
+      basicCd: 0.32,
       abilityCd: 7.0,
         // Basic attack cone stuff
-      coneRange: 60,
-      coneWidthDeg: 65,
-      coneDmg: 8,
-      basicKnock: 11,
+      coneRange: 63,
+      coneWidthDeg: 63,
+      coneDmg: 10,
+      basicKnock: 10,
       basicStun: 0.06,
         // NEW: basic attack reduces fireball cooldown
       cdRefundPerHit: 0.39,   // seconds shaved by 1 hit
@@ -647,10 +657,10 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
 
         // Fireball ability stuff 
       fireballSpeed: 280,
-      fireballRadius: 14,
+      fireballRadius: 15,
       fireballPierce: 1,
       fireballDmg: 28,
-      fireballSplash: 55
+      fireballSplash: 60
     }
   };
 
@@ -676,7 +686,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     const base = CLASSES[player.cls];
     return {
       maxHp: (base.baseMaxHearts + upgrades.maxHeartsBonus)*2,
-      moveSpd: base.moveSpd * upgrades.moveMult,
+      moveSpd: base.moveSpd * upgrades.moveSpdMult,
       basicCd: base.basicCd * upgrades.basicCdMult,
       abilityCd: base.abilityCd * upgrades.abilityCdMult,
       dmgMult: upgrades.dmgMult
@@ -815,7 +825,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       (type==="chaser"? 26 :
        type==="shooter"? 20 :
        type==="skitter"? 14 :
-       type==="summoner"? 30 : 22);
+       type==="summoner"? 28 : 22);
 
     const hp = Math.floor((baseHp + roomIndex*2.0) * d.enemyHp * (type==="summoner" ? 1.10 : 1.00));
     
@@ -823,7 +833,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       (type==="chaser"? 62 :
        type==="shooter"? 52 :
        type==="skitter"? 84 :
-       type==="summoner"? 46 : 60) * (d.enemySpd * (1 + Math.min(0.25, roomIndex*0.02)));
+       type==="summoner"? 43 : 60) * (d.enemySpd * (1 + Math.min(0.25, roomIndex*0.02)));
 
     const dmg =
       (type==="chaser"? 6 :
@@ -900,7 +910,6 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
   function dealDamage(target, amount, knockX=0, knockY=0, stun=0, slow=0, freeze=0){
     if(!target.alive) return;
     target.hp -= amount;
-    popFx(target.x, target.y, amount>=22 ? "big" : "hit");
     if(stun>0) target.stun = Math.max(target.stun, stun);
     if(slow>0) target.slow = Math.max(target.slow, slow);
     if(freeze>0) target.frozen = Math.max(target.frozen, freeze);
@@ -912,9 +921,44 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       popFx(target.x, target.y, "kill");
     }
   }
+        // Frost shard splash: hitting a frozen enemy damages nearby enemies
+    function frostShardSplash(centerEnemy, shardDmg){
+      const cls = CLASSES.frost;
+      const r = cls.shardRadius || 0;
+      if(r <= 0 || shardDmg <= 0) return;
+
+      const r2 = r*r;
+      let hits = 0;
+
+      for (const other of enemies) {
+          if (!other.alive) continue;
+          if (other === centerEnemy) continue;
+
+          if (cls.shardFreezeOnly && !(other.frozen > 0)) continue;
+
+          if (dist2(other.x, other.y, centerEnemy.x, centerEnemy.y) > r2) continue;
+
+          if (!cls.shardIgnoresLOS && !hasLOS(centerEnemy.x, centerEnemy.y, other.x, other.y)) continue;
+
+          dealDamage(other, shardDmg, 0, 0, 0.02, 0.0, 0.0);
+
+          hits++;
+          if (hits >= (cls.shardMaxTargets || 999)) break;
+        }
+
+
+    // ALWAYS show a visible splash at the center when shards trigger
+      if (cls.shardFx) {
+        popFx(centerEnemy.x, centerEnemy.y, "boom", { rad: r }); // ring like fireball
+        popFx(centerEnemy.x, centerEnemy.y, "freeze");           // optional extra “frost” feel
+      }
+
+
+  }
+
 
   // INVINCIBILITY FRAMES
-  const IFRAME_SEC = 0.60;
+  const IFRAME_SEC = 0.62;
 
   function hurtPlayer(amount, knockX=0, knockY=0){
     if(player.inv>0) return;
@@ -1012,7 +1056,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       life: 2.2
     });
   }
-
+      ////// BASIC ATTACKS //////
   function basicAttack(){
     if(state!=='play') return;
     if(player.basicCd>0) return;
@@ -1162,7 +1206,7 @@ else {
       if(which==="Damage"){
         opt3 = { title:"More Damage", desc:"+15% damage.", apply: ()=>{ upgrades.dmgMult *= 1.15; } };
       } else {
-        opt3 = { title:"Faster Basic", desc:"-15% basic cooldown.", apply: ()=>{ upgrades.basicCdMult *= 0.85; } };
+      opt3 = { title:"Move Faster", desc:"+12% move speed.", apply: ()=>{ upgrades.moveSpdMult *= 1.12; } };
       }
     } else {
       opt3 = { title:"Faster Ability", desc:"-15% ability cooldown.", apply: ()=>{ upgrades.abilityCdMult *= 0.85; } };
@@ -1274,7 +1318,7 @@ else {
   // Start/reset
   function resetRun(){
     room=1; score=0; kills=0; projs=[]; fx=[];
-    upgrades = { dmgMult:1, moveMult:1, basicCdMult:1, abilityCdMult:1, maxHeartsBonus:0 };
+    upgrades = { dmgMult:1, moveSpdMult:1, basicCdMult:1, abilityCdMult:1, maxHeartsBonus:0 };
 
     const cls = classSel.value;
     const base = CLASSES[cls];
@@ -1385,8 +1429,8 @@ else {
   // Summoner: static spawn rates (45% chaser, 45% skitter, 10% shooter), spawns NEXT to summoner, no max count, worth 0 score
   function pickSummonType(){
     const r = Math.random();
-    if(r < 0.45) return "chaser";
-    if(r < 0.95) return "skitter";
+    if(r < 0.50) return "chaser";
+    if(r < 0.97) return "skitter";
     return "shooter";
   }
 
@@ -1518,7 +1562,7 @@ else {
           // summon faster later / harder, but no hard cap
           const diffNum = Number(diffSel.value);
             // higher first number means slower minion creation
-          const cdBase = 5.0 - Math.min(0.8, room*0.02) - (diffNum-2)*0.18; // room lowers cd; harder lowers cd
+          const cdBase = 6.0 - Math.min(0.8, room*0.02) - (diffNum-2)*0.18; // room lowers cd; harder lowers cd
           e.summonCd = clamp(cdBase + Math.random()*0.6, 1.1, 3.2);
           // try 1-2 summons depending on difficulty
           // if difficulty=4 then try 2, otherwise try 1 
@@ -1573,7 +1617,10 @@ else {
           if (p.kind === "frost") {
             const cls = CLASSES.frost;
             const mult = classStats().dmgMult;
-            const bonus = (e.frozen > 0) ? cls.boltBonusVsFrozen * mult : 0;
+
+            const wasFrozen = (e.frozen > 0);
+
+            const bonus = wasFrozen ? (cls.boltBonusVsFrozen * mult) : 0;
 
             dealDamage(
               e,
@@ -1585,11 +1632,18 @@ else {
               0.0
             );
 
-            popFx(e.x, e.y, e.frozen > 0 ? "big" : "hit");
+            // NEW: shards splash when you hit a frozen target
+            if (wasFrozen) {
+              const shardDmg = (cls.shardDamage || 0) * mult;
+              frostShardSplash(e, shardDmg);
+            }
+
+            popFx(e.x, e.y, wasFrozen ? "big" : "hit");
 
             p.life = -1;
             break;
           }
+
           else if (p.kind === "fireball") {
             if (p.hitSet && p.hitSet.has(e)) continue;
             if (p.hitSet) p.hitSet.add(e);
@@ -1874,24 +1928,31 @@ else {
     for(const f of fx){
       const a = 1 - clamp(f.t/0.45,0,1);
 
-      if(f.kind==="boom"){
+      if (f.kind === "boom") {
         const rad = f.rad || 50;
-        const grow = 1 + (1-a)*0.05;
-        ctx.globalAlpha = 0.22*a;
+
+        // how big the glow is relative to the ring
+        const innerFrac = f.innerFrac ?? 0.65;   // 65% of outer radius (tweak)
+        const ringGrow  = 1 + (1 - a) * 0.05;
+        const glowGrow  = 1 + (1 - a) * 0.10;    // glow can "bloom" a bit more if you want
+
+        // OUTER RING
+        ctx.globalAlpha = 0.22 * a;
         ctx.strokeStyle = "rgba(255,210,74,1)";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(f.x,f.y, rad*grow, 0, TAU);
+        ctx.arc(f.x, f.y, rad * ringGrow, 0, TAU);
         ctx.stroke();
 
-        ctx.globalAlpha = 0.08*a;
+        // INNER GLOW (scales with rad)
+        ctx.globalAlpha = 0.10 * a;
         ctx.fillStyle = "rgba(255,210,74,1)";
         ctx.beginPath();
-        ctx.arc(f.x,f.y, rad*grow, 0, TAU);
+        ctx.arc(f.x, f.y, rad * innerFrac * glowGrow, 0, TAU);
         ctx.fill();
 
-        ctx.lineWidth=1;
-        ctx.globalAlpha=1;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 1;
         continue;
       }
 
