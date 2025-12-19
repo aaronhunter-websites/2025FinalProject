@@ -601,7 +601,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
   const CLASSES = {
     frost: {
       name:"Frost Mage",
-      baseMaxHearts: 9,
+      baseMaxHearts: 10,
       moveSpd: 166,
       basicCd: 0.28,
       abilityCd: 4.4,
@@ -618,7 +618,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     },
     blood: {
       name:"Blood Mage",
-      baseMaxHearts: 10,
+      baseMaxHearts: 12,
       moveSpd: 162,
       basicCd: 0.30,
       abilityCd: 3.75,
@@ -630,7 +630,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     },
     fire: {
       name:"Fire Mage",
-      baseMaxHearts: 9,
+      baseMaxHearts: 10,
       moveSpd: 168,
       basicCd: 0.30,
       abilityCd: 7.0,
@@ -641,7 +641,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       basicKnock: 11,
       basicStun: 0.06,
         // NEW: basic attack reduces fireball cooldown
-      cdRefundPerHit: 0.38,   // seconds shaved by 1 hit
+      cdRefundPerHit: 0.39,   // seconds shaved by 1 hit
       cdRefundCap: 1.65,      // max seconds shaved per basic
       cdRefundExpo: 0.75,     // additional hits. 0.5=sqrt --> 1=linear
 
@@ -664,7 +664,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     return 4;
   }
   function bloodPowerMult(tier){
-    return tier===1 ? 0.50 : tier===2 ? 1.00 : tier===3 ? 1.4 : 1.80;
+    return tier===1 ? 0.50 : tier===2 ? 1.00 : tier===3 ? 1.4 : 2.0;
   }
   function bloodProjRadius(tier){
     return tier===1 ? 4.0 : tier===2 ? 5.0 : tier===3 ? 6.5 : 8.0;
