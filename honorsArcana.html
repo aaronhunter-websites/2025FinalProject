@@ -183,6 +183,23 @@
       background:var(--danger); transform: rotate(45deg);
     }
     .heart.empty:before,.heart.empty:after,.heart.empty i{background: rgba(255,255,255,.12)}
+      /* Half hearts */
+    .heart.half:before,
+    .heart.half:after{
+        background: linear-gradient(
+          to right,
+          var(--danger) 50%,
+          rgba(255,255,255,.12) 50%
+        );
+      }
+
+    .heart.half i{
+        background: linear-gradient(
+          45deg,
+          var(--danger) 50%,
+          rgba(255,255,255,.12) 50%
+        );
+      }
     .bar{
       width:140px; height:9px;
       border:1px solid rgba(255,255,255,.14);
@@ -240,7 +257,7 @@
 <body>
 <header>
   <h1>Honors Arcana <span class="badge">by Aaron Hunter</span></h1>
-  <p class="sub">Version 1.1.1</p>
+  <p class="sub">Version 1.2.0</p>
 </header>
 
 <main>
@@ -613,12 +630,12 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       freezeConeRange: 96,
       freezeConeWidthDeg: 130,
       freezeConeDmg: 6,
-      freezeBonusPerExtraHit: 0.20, // +0.20s for each enemy after the first
-      freezeBonusCap: 2.00 ,         // max bonus seconds added
+      freezeBonusPerExtraHit: 0.25, // +0.25s for each enemy after the first
+      freezeBonusCap: 2.50 ,         // max bonus seconds added
 
             // Frost shard splash (AOE when you hit a frozen enemy with a frost bolt)
       shardRadius: 35,          // world units (px). try 50–70
-      shardDamage: 4,           // flat damage
+      shardDamage: 5,           // flat damage
       shardMaxTargets: 8,       // cap so it doesn’t scale infinitely
       shardIgnoresLOS: true,    // usually feels better as true
       shardFreezeOnly: false,   // if true, only damages frozen enemies
@@ -633,10 +650,23 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       basicCd: 0.30,
       abilityCd: 3.75,
       boltDmgBase: 10,
-      drainRange: 73,
+      drainRange: 75,
       drainWidthDeg: 60,
-      drainDmg: 6,
+      drainDmg: 7,
       
+      // -------------------------
+      // Blood basic-pierce tuning
+      // pierce = max(0, tier - 2) by default
+      // Tier 1 -> 0, Tier 2 -> 0, Tier 3 -> 1, Tier 4 -> 2
+      // If you ever want earlier/later piercing, change this offset.
+      // Example:
+      //   offset = -3 => tier 4 pierces 1
+      //   offset = -1 => tier 2 pierces 1, tier 4 pierces 3
+      // -------------------------
+      boltPierceOffset: -2,
+
+
+
     },
     fire: {
       name:"Fire Mage",
@@ -645,21 +675,21 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
       basicCd: 0.32,
       abilityCd: 7.0,
         // Basic attack cone stuff
-      coneRange: 63,
+      coneRange: 64,
       coneWidthDeg: 63,
       coneDmg: 10,
       basicKnock: 10,
       basicStun: 0.06,
         // NEW: basic attack reduces fireball cooldown
-      cdRefundPerHit: 0.39,   // seconds shaved by 1 hit
-      cdRefundCap: 1.65,      // max seconds shaved per basic
-      cdRefundExpo: 0.75,     // additional hits. 0.5=sqrt --> 1=linear
+      cdRefundPerHit: 0.35,   // seconds shaved by 1 hit
+      cdRefundCap: 1.60,      // max seconds shaved per basic
+      cdRefundExpo: 0.77,     // additional hits. 0.5=sqrt --> 1=linear
 
         // Fireball ability stuff 
       fireballSpeed: 280,
       fireballRadius: 15,
       fireballPierce: 1,
-      fireballDmg: 28,
+      fireballDmg: 29,
       fireballSplash: 60
     }
   };
@@ -820,6 +850,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     return "shooter";
   }
 
+    // ENEMY BALANCES
   function makeEnemy(type, x, y, d, roomIndex, extra={}){
     const baseHp =
       (type==="chaser"? 26 :
@@ -837,7 +868,7 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
 
     const dmg =
       (type==="chaser"? 6 :
-       type==="shooter"? 5 :
+       type==="shooter"? 4 : // 1.2.0 -- reducing shooter damage 
        type==="skitter"? 4 :
        type==="summoner"? 4 : 4) * d.enemyDmg;
 
@@ -1088,12 +1119,22 @@ uiBest.textContent = bestByClass.frost; // temporary until updateUI runs
     return;
   }
 
-        player.hp -= cost;
+      player.hp -= cost;
 
-        const tier = bloodPowerTier();
-        const dmg = cls.boltDmgBase * bloodPowerMult(tier) * mult;
-        const radius = bloodProjRadius(tier);
-        shootProjectile(a, 400, dmg, "blood", radius, { bpTier: tier });
+      const tier = bloodPowerTier();
+      const dmg = cls.boltDmgBase * bloodPowerMult(tier) * mult;
+      const radius = bloodProjRadius(tier);
+      // Compute how many enemies the blood bolt can pierce through.
+      // "pierceLeft" means: after this many hits, the projectile dies.
+      const pierceLeft = Math.max(0, tier + (cls.boltPierceOffset ?? -2));
+
+      // Fire the blood bolt and attach pierce state + a hitSet.
+      // hitSet prevents "double-hits" when the projectile overlaps an enemy for multiple frames.
+      shootProjectile(a, 400, dmg, "blood", radius, {
+        bpTier: tier,
+        pierceLeft,
+        hitSet: new Set(),
+      });
 
     // optional: tiny feedback so it doesn’t feel like “random damage”
       popFx(player.x, player.y, "hit"); // or a custom "bleed" fx if you have one
@@ -1190,9 +1231,15 @@ else {
   function startRewards(){
     state='reward';
 
-    const opt1 = { title:"Heal 50%", desc:"Restore 50% of your max HP.", apply: ()=>{
-      const healAmt = Math.max(2, Math.round(player.maxHp * 0.50));
-      player.hp = clamp(player.hp + healAmt, 0, player.maxHp);
+    // OPTION 1: Full heal
+    const opt1 = {
+      title:"Full Heal",
+      desc:"Restore to full HP.",
+      apply: ()=>{
+        // Set HP directly to max.
+        // (No clamp needed, but it doesn't hurt if you prefer it.)
+        player.hp = player.maxHp;
+        // or: player.hp = clamp(player.maxHp, 0, player.maxHp);
     }};
 
     const opt2 = { title:"+2 Max Hearts", desc:"Increase max HP by 2 hearts.", apply: ()=>{
@@ -1274,16 +1321,33 @@ else {
   function setStatus(t){ uiStatus.textContent = t; }
 
   function renderHearts(){
-    uiHearts.innerHTML="";
-    const hearts = Math.ceil(player.maxHp/2);
-    const filled = Math.ceil(player.hp/2);
-    for(let i=0;i<hearts;i++){
+  uiHearts.innerHTML = "";
+
+  const totalHearts = Math.ceil(player.maxHp / 2);
+  let hpLeft = player.hp;
+
+    for (let i = 0; i < totalHearts; i++) {
       const h = document.createElement('span');
-      h.className = 'heart' + (i<filled ? '' : ' empty');
+      h.className = 'heart';
+
+      if (hpLeft >= 2) {
+        // full heart
+        h.classList.add('full');
+        hpLeft -= 2;
+      } else if (hpLeft === 1) {
+        // half heart
+        h.classList.add('half');
+        hpLeft -= 1;
+      } else {
+        // empty heart
+        h.classList.add('empty');
+      }
+
       h.appendChild(document.createElement('i'));
       uiHearts.appendChild(h);
     }
   }
+
 
   function updateUI(){
     const cls = player ? player.cls : "frost";      // display best score for each class stuff?
@@ -1426,7 +1490,7 @@ else {
     return [sx,sy];
   }
 
-  // Summoner: static spawn rates (45% chaser, 45% skitter, 10% shooter), spawns NEXT to summoner, no max count, worth 0 score
+  // Summoner: static spawn rates (50% chaser, 47% skitter, 3% shooter), spawns NEXT to summoner, no max count, worth 0 score
   function pickSummonType(){
     const r = Math.random();
     if(r < 0.50) return "chaser";
@@ -1642,9 +1706,7 @@ else {
 
             p.life = -1;
             break;
-          }
-
-          else if (p.kind === "fireball") {
+          } else if (p.kind === "fireball") {
             if (p.hitSet && p.hitSet.has(e)) continue;
             if (p.hitSet) p.hitSet.add(e);
 
@@ -1663,16 +1725,47 @@ else {
             explodeFireball(p.x, p.y, p, e);
             p.life = -1;
             break;
-          }
-          else {
+          } else if (p.kind === "blood") {
+              // If we've already hit this specific enemy with this projectile, skip it.
+              // This prevents multiple hits while overlapping across frames.
+              if (p.hitSet && p.hitSet.has(e)) continue;
+              if (p.hitSet) p.hitSet.add(e);
+
+              // Apply damage + tiny knock/stun like the generic projectile case
+              dealDamage(
+                e,
+                p.dmg,
+                (p.vx > 0 ? 3 : -3),
+                (p.vy > 0 ? 3 : -3),
+                0.02
+              );
+
+              popFx(e.x, e.y, "hit");
+
+              // If we still have pierces remaining, keep going.
+              // Example: pierceLeft=2 means it can pass through 2 enemies, then die on the next hit.
+              if ((p.pierceLeft | 0) > 0) {
+                p.pierceLeft--;
+
+                // Nudge the projectile forward past the enemy so we don't immediately re-collide
+                const [vx, vy] = norm(p.vx, p.vy);
+                p.x += vx * (e.r + p.r + 1);
+                p.y += vy * (e.r + p.r + 1);
+
+                continue; // keep checking other enemies this frame; projectile remains alive
+              }
+
+              // No pierce left => projectile expires
+              p.life = -1;
+              break;
+            } else {
             dealDamage(
               e,
               p.dmg,
               (p.vx > 0 ? 3 : -3),
               (p.vy > 0 ? 3 : -3),
               0.02
-            );
-
+                );
             p.life = -1;
             break;
           }
