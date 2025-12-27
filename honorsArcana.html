@@ -240,7 +240,7 @@
 <body>
 <header>
   <h1>Honors Arcana <span class="badge">by Aaron Hunter</span></h1>
-  <p class="sub">Clear enemies → doors open → step on a green door to advance → choose an upgrade.</p>
+  <p class="sub">Version 1.1.1</p>
 </header>
 
 <main>
@@ -350,7 +350,7 @@
         </div>
       </div>
 
-      <div class="muted" style="font-size:12.5px">If your window is small, the page will scroll. That’s intentional for clarity.</div>
+      <!-- <div class="muted" style="font-size:12.5px">Note: If your window is small, the page will scroll.</div> -->
     </div>
   </section>
 </main>
@@ -1214,9 +1214,9 @@ else {
 
     showModal(
       `ROOM ${room} CLEARED`,
-      `Choose <strong>one</strong> upgrade. Then the next room begins.`,
+      `Choose an upgrade. Then the next room begins.`,
       [opt1,opt2,opt3],
-      `Step on a green door to advance after clearing enemies.`
+      `Tip: Add to your max health when your hearts are mostly full. And don't neglect damage buffs!`
     );
   }
 
@@ -1979,9 +1979,9 @@ else {
   showModal(
     "READY",
     `Pick a mage and difficulty, then press <span class="kbd">Start</span> (or click OK).<br/>
-     <span class="muted">Frost: freeze crowds and hit harder against frozen targets.
-                         Blood: trade your HP for power and drain life from your enemies.
-                         Fire: use short cone attacks to recharge devastating fireballs.</span>`,
+     <span class="muted"><strong>Frost:</strong> freeze crowds and hit harder against frozen targets. <br/>
+                         <strong>Blood:</strong> trade your HP for power and drain life from your enemies. <br/>
+                         <strong>Fire:</strong> use short cone attacks to recharge devastating fireballs.</span>`,
     [],
     "Tip: You get i-frames after taking damage to prevent instant multi-hit deaths."
   );

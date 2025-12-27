@@ -37,7 +37,9 @@
          <a href="#top">Back to Top</a>
          <a href="#concept">Concept & Gameplay</a>
          <a href="#classes">The Mage Classes</a>
+         <a href="#upgrades">Post-room Upgrades</a>
          <a href="#enemies">Enemy Types</a>
+         <a href="#patch">Patch Notes</a>
 
          <button onclick="window.open('honorsArcana.html', '_blank')" title="Play Dungeon Dash!">
                 Play Honors Arcana</button>
@@ -46,7 +48,13 @@
 
    <div class="content">
       <h3 id="concept">Concept & Gameplay</h3>
-      <p><em>Honors Arcana</em> is a single player roguelike game designed by Aaron Hunter for the final project of IS 201. 
+      <p>
+      <em>Honors Arcana</em> is a single player roguelike game designed by Aaron Hunter for the final project of IS 201. 
+      While I designed the game concept and mechanics, the bulk of the actual game code was created using ChatGPT.
+      In accordance with assignment instructions, all game code is contained in a single HTML file.
+      
+      </p>   
+      <p>
          My initial idea for this project, was to do the meme of running <em>Doom</em> in a comically simple medium. 
          Look up "weird things people have used to play Doom" and you'll see what I mean. As such, my first game attempt was 
          a <em>Doom</em> rip off, which you can play <a href="doomish.html" target="_blank">here.</a> Honestly, I'm impressed that AI was able 
@@ -61,8 +69,8 @@
          to implement in this context. </p>
       <p>
          I had ideas for game mechanics I thought would be cool, but several of them were too 
-         complex for this project. I ended up keeping the vibe of these ideas (largely inspired by MOBAs), just 
-         reducing the scope to be just about mages. Each mage class has a basic attack and a cooldown-based ability, the details
+         complex for this project. I ended up keeping the vibe of these ideas (largely inspired by MOBAs), but 
+         reduced the scope to be just about mages. Each mage class has a basic attack and a cooldown-based ability, the details
          of which are described below.
       </p>
 
@@ -76,6 +84,9 @@
                The frost mage's ability is a large cone that freezes all enemies it hits for a short duration,
                which gets longer for each additional enemy caught in the cone. Although the frost mage's basic attack
                deals low damage normally, it deals significant bonus damage to frozen enemies.
+            </p>
+            <p>
+               As of version 1.1.0, hitting a frozen target with a basic attack also deals small AOE damage in a short radius (frost shards)
             </p>
 
          <h4>Blood</h4>
@@ -125,6 +136,27 @@
             
       
       </div>
+      <h3 id="upgrades">Post-room Upgrades</h3>
+      <div class="classes">
+            After each room, the player is presented with a choice between three upgrade options. The first two are always the same, 
+            but the third changes randomly.
+         <ol>
+            <li>Restores health equal to 50% the player's max.</li>
+               
+            <li>Increase player's max HP by 2 hearts.</li>
+
+            <li>Changing option</li>
+               <ul>
+                  <li>Increase all player damage by 15%</li>
+                  <li>Increase player movement speed by 12%</li>
+                  <li>Reduce ability cooldown by 15%</li>
+
+               </ul>
+               
+
+         </ol>
+      </div>
+
       
       <h3 id="enemies">Enemy Types (in order of threat level)</h3>
       <div class="enemyTypes">
@@ -197,6 +229,29 @@
                </ul>
         </ol>
       </div>
+      <br>
+      <h3 id="patch">Patch Notes</h3>
+      <div>
+         <h4>1.0.0</h4>
+            <ul>
+               <li><em>Honors Arcana</em> version submitted for class project</li>
+            </ul>
+         <h4>1.1.0</h4>
+            <ul>
+               <li>Misc balance changes</li>
+               <li>New mechanic: Frost Shards</li>
+                  <ul>
+                     <li>Frost mage: hitting a frozen target with a basic attack also deals small AOE damage in a short radius</li>
+                  </ul>
+            </ul>
+         <h4>1.1.1</h4>
+            <ul>
+               <li>Misc visual changes</li>
+               <li>Version number added</li>
+            </ul>
+
+      </div>
+
         
    </div>
 
